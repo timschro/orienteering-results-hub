@@ -1,10 +1,18 @@
-import { Suspense } from "react"
+"use client"
+
+import { Suspense, useEffect, useState, memo } from "react"
 import { Compass, ExternalLink, Clock } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
+import dynamic from "next/dynamic"
 import { competitions } from "@/lib/data"
 import { formatTimeWindow, isCompetitionActive } from "@/lib/utils"
 import { CompetitionCard } from "@/components/ui/competition-card"
+import { useMobile } from "@/hooks/use-mobile"
+import { Skeleton } from "@/components/ui/skeleton"
+
+// Dynamically import QRCode with no SSR
+const QRCode = dynamic(() => import("react-qr-code"), { ssr: false })
 
 export default function Home() {
   return (
@@ -35,16 +43,6 @@ export default function Home() {
 }
 
 // Client Components
-
-"use client"
-
-import dynamic from "next/dynamic"
-import { useEffect, useState, memo } from "react"
-import { useMobile } from "@/hooks/use-mobile"
-import { Skeleton } from "@/components/ui/skeleton"
-
-// Dynamically import QRCode with no SSR
-const QRCode = dynamic(() => import("react-qr-code"), { ssr: false })
 
 // Client-side time component
 const ClientTime = memo(function ClientTime() {
