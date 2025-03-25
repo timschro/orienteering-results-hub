@@ -80,7 +80,7 @@ export const ResultsQRCode = memo(function ResultsQRCode({ value }: { value: str
         aria-label={`QR code für ${value}`}
       />
       <p className="text-xs text-center md:text-left mt-2 text-muted-foreground">
-        Scannen für Live Ergebnisse
+       Live Results
       </p>
     </div>
   )
