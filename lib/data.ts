@@ -14,7 +14,7 @@ export const competitions = [
     name: "DM Sprint",
     date: "05.04.2025",
     startTime: "2025-03-25T11:00:00",
-    endTime: "2025-03-35T14:00:00",
+    endTime: "2025-03-25T14:00:00",
     liveResultsUrl: "https://oresults.eu/events/1707",
     liveloxUrl: "https://www.livelox.com/Events/Show/151120/DM-Sprint",
   },
