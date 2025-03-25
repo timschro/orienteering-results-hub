@@ -1,27 +1,39 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 
 export function useMobile() {
   const [isMobile, setIsMobile] = useState(false)
 
-  useEffect(() => {
-    // Check if window is defined (client-side)
-    if (typeof window !== "undefined") {
-      const checkIfMobile = () => {
-        setIsMobile(window.innerWidth < 768)
-      }
-
-      // Initial check
-      checkIfMobile()
-
-      // Add event listener for window resize
-      window.addEventListener("resize", checkIfMobile)
-
-      // Clean up
-      return () => window.removeEventListener("resize", checkIfMobile)
-    }
+  // Memoize the checkIfMobile function to avoid recreating it on every render
+  const checkIfMobile = useCallback(() => {
+    setIsMobile(window.innerWidth < 768)
   }, [])
+
+  useEffect(() => {
+    // Only run on client
+    if (typeof window === "undefined") return
+
+    // Initial check
+    checkIfMobile()
+
+    // Use a debounced resize handler for better performance
+    let resizeTimer: NodeJS.Timeout
+    
+    const handleResize = () => {
+      clearTimeout(resizeTimer)
+      resizeTimer = setTimeout(checkIfMobile, 100)
+    }
+
+    // Add event listener with passive option for better performance
+    window.addEventListener("resize", handleResize, { passive: true })
+
+    // Clean up
+    return () => {
+      clearTimeout(resizeTimer)
+      window.removeEventListener("resize", handleResize)
+    }
+  }, [checkIfMobile])
 
   return isMobile
 }
