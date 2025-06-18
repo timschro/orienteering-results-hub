@@ -23,7 +23,7 @@ export const viewport: Viewport = {
 
 export async function generateMetadata(): Promise<Metadata> {
   const headersList = await headers()
-  const domain = headersList.get('x-domain') || 'results.dm-ol.de'
+  const domain = headersList.get('x-domain') || 'results.ol-dm.de'
   const domainConfig = getDomainConfig(domain)
   
   const title = domainConfig?.name || 'Orienteering Results Hub'
@@ -54,7 +54,7 @@ export default async function RootLayout({
   children: React.ReactNode
 }>) {
   const headersList = await headers()
-  const domain = headersList.get('x-domain') || 'results.dm-ol.de'
+  const domain = headersList.get('x-domain') || 'results.ol-dm.de'
   
   return (
     <html lang="en" className={inter.variable}>

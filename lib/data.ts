@@ -1,6 +1,6 @@
 // Domain-specific competition data
 export const domainConfigs = {
-  'results.dm-ol.de': {
+  'results.ol-dm.de': {
     name: 'DM OL im Harz 2025',
     competitions: [
       {
@@ -91,4 +91,4 @@ export function getDomainConfig(domain: string) {
 }
 
 // Default competitions (fallback)
-export const competitions = domainConfigs['results.dm-ol.de'].competitions
+export const competitions = domainConfigs['results.ol-dm.de'].competitions

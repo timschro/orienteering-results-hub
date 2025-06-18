@@ -10,7 +10,7 @@ export function middleware(request: NextRequest) {
   // Check if domain is supported
   if (!isSupportedDomain(domain)) {
     // Redirect to default domain or show error
-    const defaultDomain = 'results.dm-ol.de'
+    const defaultDomain = 'results.ol-dm.de'
     const url = request.nextUrl.clone()
     url.hostname = defaultDomain
     return NextResponse.redirect(url)

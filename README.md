@@ -13,7 +13,7 @@ A multi-domain application for displaying live orienteering competition results 
 
 ## Supported Domains
 
-- `results.dm-ol.de` - German Championship orienteering events
+- `results.ol-dm.de` - German Championship orienteering events
 - `results.hamburg-ol.de` - Hamburg orienteering events
 
 ## Getting Started
@@ -53,7 +53,7 @@ To test the multi-domain functionality locally:
 
 1. Add entries to your `/etc/hosts` file:
 ```
-127.0.0.1 results.dm-ol.de
+127.0.0.1 results.ol-dm.de
 127.0.0.1 results.hamburg-ol.de
 ```
 
@@ -87,7 +87,7 @@ npm run test:domains
 1. Add the domain to `lib/domains.ts`:
 ```typescript
 export const SUPPORTED_DOMAINS = [
-  'results.dm-ol.de',
+  'results.ol-dm.de',
   'results.hamburg-ol.de',
   'results.new-domain.de', // Add new domain
 ] as const

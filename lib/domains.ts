@@ -1,6 +1,6 @@
 // Supported domains configuration
 export const SUPPORTED_DOMAINS = [
-  'results.dm-ol.de',
+  'results.ol-dm.de',
   'results.hamburg-ol.de',
 ] as const
 
@@ -8,7 +8,7 @@ export type SupportedDomain = typeof SUPPORTED_DOMAINS[number]
 
 // Domain-specific configurations
 export const DOMAIN_CONFIGS = {
-  'results.dm-ol.de': {
+  'results.ol-dm.de': {
     name: 'DM Orientierungslauf',
     description: 'Live results for German Championship orienteering events',
     region: 'Germany',

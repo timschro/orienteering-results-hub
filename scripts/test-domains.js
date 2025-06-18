@@ -8,7 +8,7 @@
 const http = require('http');
 
 const domains = [
-  'results.dm-ol.de',
+  'results.ol-dm.de',
   'results.hamburg-ol.de'
 ];
 

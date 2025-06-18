@@ -4,7 +4,7 @@ This app supports multiple domains with different competition data for each doma
 
 ## Supported Domains
 
-- `results.dm-ol.de` - German Championship orienteering events
+- `results.ol-dm.de` - German Championship orienteering events
 - `results.hamburg-ol.de` - Hamburg orienteering events
 
 ## Deployment Setup
@@ -22,7 +22,7 @@ No additional environment variables are required for domain detection.
 Configure your DNS to point both domains to your hosting provider:
 
 ```
-results.dm-ol.de     A     <your-server-ip>
+results.ol-dm.de     A     <your-server-ip>
 results.hamburg-ol.de A     <your-server-ip>
 ```
 
@@ -33,7 +33,7 @@ results.hamburg-ol.de A     <your-server-ip>
 ```nginx
 server {
     listen 80;
-    server_name results.dm-ol.de results.hamburg-ol.de;
+    server_name results.ol-dm.de results.hamburg-ol.de;
     
     location / {
         proxy_pass http://localhost:3000;
@@ -49,7 +49,7 @@ server {
 
 ```apache
 <VirtualHost *:80>
-    ServerName results.dm-ol.de
+    ServerName results.ol-dm.de
     ServerAlias results.hamburg-ol.de
     
     ProxyPreserveHost On
@@ -67,7 +67,7 @@ Use Let's Encrypt or your preferred SSL provider to secure both domains:
 
 ```bash
 # Let's Encrypt with Certbot
-certbot --nginx -d results.dm-ol.de -d results.hamburg-ol.de
+certbot --nginx -d results.ol-dm.de -d results.hamburg-ol.de
 ```
 
 ### 6. Application Deployment
@@ -90,7 +90,7 @@ You can test the multi-domain setup locally by:
 
 1. Adding entries to your `/etc/hosts` file:
    ```
-   127.0.0.1 results.dm-ol.de
+   127.0.0.1 results.ol-dm.de
    127.0.0.1 results.hamburg-ol.de
    ```
 
