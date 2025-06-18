@@ -41,8 +41,8 @@ export const domainConfigs = {
         date: "28.07.2025",
         startTime: "2025-06-27T16:00:00",
         endTime: "2025-06-27T23:00:00",
-        liveResultsUrl: "https://oresults.eu/events/1801",
-        liveloxUrl: "",
+        liveResultsUrl: "https://oresults.eu/events/1778",
+        liveloxUrl: "https://www.livelox.com/Events/Show/160818/Hamburg-OL-2025-Prolog",
       },
       {
         id: 2,
@@ -50,7 +50,7 @@ export const domainConfigs = {
         date: "28.06.2025",
         startTime: "2025-06-28T13:00:00",
         endTime: "2025-06-28T16:00:00",
-        liveResultsUrl: "https://oresults.eu/events/1802",
+        liveResultsUrl: "https://oresults.eu/events/1775",
         liveloxUrl: "https://www.livelox.com/Events/Show/160807/Hamburg-OL-2025-Sprint-1-Lauf",
       },
       {
@@ -59,7 +59,7 @@ export const domainConfigs = {
         date: "28.06.2025",
         startTime: "2025-06-28T16:00:00",
         endTime: "2025-06-28T123:00:00",
-        liveResultsUrl: "https://oresults.eu/events/1802",
+        liveResultsUrl: "https://oresults.eu/events/1776",
         liveloxUrl: "https://www.livelox.com/Events/Show/160808/Hamburg-OL-2025-Sprint-2-Lauf",
       },
       ,
@@ -69,8 +69,8 @@ export const domainConfigs = {
         date: "29.06.2025",
         startTime: "2025-06-29T09:00:00",
         endTime: "2025-06-29T123:00:00",
-        liveResultsUrl: "https://oresults.eu/events/1802",
-        liveloxUrl: "",
+        liveResultsUrl: "https://oresults.eu/events/1777",
+        liveloxUrl: "https://www.livelox.com/Events/Show/160819/Hamburg-OL-2025-Mitteldistanz",
       },
     ]
   }
