@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "analyze": "ANALYZE=true next build"
+    "analyze": "ANALYZE=true next build",
+    "test:domains": "node scripts/test-domains.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",

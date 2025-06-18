@@ -5,16 +5,60 @@ import { Compass, ExternalLink, Clock } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 import dynamic from "next/dynamic"
-import { competitions } from "@/lib/data"
+import { getCompetitionsForDomain, getDomainConfig } from "@/lib/data"
 import { formatTimeWindow, isCompetitionActive } from "@/lib/utils"
 import { CompetitionCard } from "@/components/ui/competition-card"
 import { useMobile } from "@/hooks/use-mobile"
+import { useDomain } from "@/hooks/use-domain"
 import { Skeleton } from "@/components/ui/skeleton"
 
 // Dynamically import QRCode with no SSR
 const QRCode = dynamic(() => import("react-qr-code"), { ssr: false })
 
 export default function Home() {
+  const { domainConfig, isLoading, isSupportedDomain } = useDomain()
+  
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <header className="border-b">
+          <div className="container mx-auto py-6 px-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Compass className="h-6 w-6 text-primary" aria-hidden="true" />
+                <Skeleton className="h-8 w-48" />
+              </div>
+              <ClientTime />
+            </div>
+          </div>
+        </header>
+        <main className="container mx-auto py-8 px-4">
+          <div className="grid gap-6 md:grid-cols-2">
+            {[1, 2, 3].map((i) => (
+              <CompetitionCardSkeleton key={i} />
+            ))}
+          </div>
+        </main>
+      </div>
+    )
+  }
+
+  if (!isSupportedDomain) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <Compass className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+          <h1 className="text-2xl font-bold mb-2">Domain nicht unterstützt</h1>
+          <p className="text-muted-foreground">
+            Diese Domain wird nicht unterstützt. Bitte verwenden Sie eine der unterstützten Domains.
+          </p>
+        </div>
+      </div>
+    )
+  }
+
+  const competitions = domainConfig?.competitions || []
+
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b">
@@ -22,7 +66,7 @@ export default function Home() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Compass className="h-6 w-6 text-primary" aria-hidden="true" />
-              <h1 className="text-2xl font-bold">OL Live Results</h1>
+              <h1 className="text-2xl font-bold">{domainConfig?.name || 'OL Live Results'}</h1>
             </div>
             <ClientTime />
           </div>

@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import { ThemeProvider } from '@/components/theme-provider'
+import { headers } from 'next/headers'
+import { getDomainConfig } from '@/lib/data'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -19,29 +21,41 @@ export const viewport: Viewport = {
   ],
 }
 
-export const metadata: Metadata = {
-  title: 'Orienteering Results Hub',
-  description: 'Live results and tracking for orienteering competitions',
-  generator: 'Next.js',
-  metadataBase: new URL('https://orienteering-results-hub.example.com'),
-  openGraph: {
-    type: 'website',
-    title: 'Orienteering Results Hub',
-    description: 'Live results and tracking for orienteering competitions',
-    siteName: 'Orienteering Results Hub',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Orienteering Results Hub',
-    description: 'Live results and tracking for orienteering competitions',
-  },
+export async function generateMetadata(): Promise<Metadata> {
+  const headersList = await headers()
+  const domain = headersList.get('x-domain') || 'results.dm-ol.de'
+  const domainConfig = getDomainConfig(domain)
+  
+  const title = domainConfig?.name || 'Orienteering Results Hub'
+  const description = `Live results and tracking for ${domainConfig?.name || 'orienteering competitions'}`
+  
+  return {
+    title,
+    description,
+    generator: 'Next.js',
+    metadataBase: new URL(`https://${domain}`),
+    openGraph: {
+      type: 'website',
+      title,
+      description,
+      siteName: title,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+    },
+  }
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const headersList = await headers()
+  const domain = headersList.get('x-domain') || 'results.dm-ol.de'
+  
   return (
     <html lang="en" className={inter.variable}>
       <head>
@@ -49,6 +63,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://livelox.com" />
         <link rel="dns-prefetch" href="https://oresults.eu" />
         <link rel="dns-prefetch" href="https://livelox.com" />
+        <meta name="x-domain" content={domain} />
       </head>
       <body className="antialiased">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
