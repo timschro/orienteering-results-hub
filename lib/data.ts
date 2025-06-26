@@ -46,7 +46,7 @@ export const domainConfigs = {
       },
       {
         id: 2,
-        name: "Hamburg-Sprint Lauf 1",
+        name: "Sprint Lauf 1",
         date: "28.06.2025",
         startTime: "2025-06-28T13:00:00",
         endTime: "2025-06-28T16:00:00",
@@ -55,7 +55,7 @@ export const domainConfigs = {
       },
       {
         id: 3,
-        name: "Hamburg-Sprint Lauf 2",
+        name: "Sprint Lauf 2",
         date: "28.06.2025",
         startTime: "2025-06-28T17:00:00",
         endTime: "2025-06-28T18:30:00",
@@ -65,7 +65,7 @@ export const domainConfigs = {
       ,
       {
         id: 4,
-        name: "Mitteldistanz",
+        name: "Mittel-OL",
         date: "29.06.2025",
         startTime: "2025-06-29T10:30:00",
         endTime: "2025-06-29T13:30:00",
