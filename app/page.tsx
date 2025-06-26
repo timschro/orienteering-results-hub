@@ -59,6 +59,14 @@ export default function Home() {
 
   const competitions = domainConfig?.competitions || []
 
+  // Filter out competitions with empty URLs
+  const visibleCompetitions = competitions.filter((competition): competition is NonNullable<typeof competition> => {
+    if (!competition) return false
+    const hasLiveResults = competition.liveResultsUrl && competition.liveResultsUrl.trim() !== ""
+    const hasLivelox = competition.liveloxUrl && competition.liveloxUrl.trim() !== ""
+    return hasLiveResults || hasLivelox
+  })
+
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b">
@@ -74,13 +82,23 @@ export default function Home() {
       </header>
 
       <main className="container mx-auto py-8 px-4">
-        <div className="grid gap-6 md:grid-cols-2">
-          {competitions.map((competition) => (
-            <Suspense key={competition.id} fallback={<CompetitionCardSkeleton />}>
-              <CompetitionCard competition={competition} />
-            </Suspense>
-          ))}
-        </div>
+        {visibleCompetitions.length === 0 ? (
+          <div className="text-center py-12">
+            <Compass className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+            <h2 className="text-xl font-semibold mb-2">Keine Live-Ergebnisse verfügbar</h2>
+            <p className="text-muted-foreground">
+              Derzeit sind keine Live-Ergebnisse für diese Veranstaltung verfügbar.
+            </p>
+          </div>
+        ) : (
+          <div className="grid gap-6 md:grid-cols-2">
+            {visibleCompetitions.map((competition) => (
+              <Suspense key={competition.id} fallback={<CompetitionCardSkeleton />}>
+                <CompetitionCard competition={competition} />
+              </Suspense>
+            ))}
+          </div>
+        )}
       </main>
     </div>
   )

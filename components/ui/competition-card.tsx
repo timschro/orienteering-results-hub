@@ -53,28 +53,34 @@ export const CompetitionCard = memo(function CompetitionCard({ competition }: Co
 
       <div className="flex flex-col md:flex-row gap-4 justify-between items-start">
         <div className="space-y-3 w-full md:w-1/2">
-          <Link
-            href={competition.liveResultsUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 text-primary hover:underline"
-          >
-            <ExternalLink className="h-4 w-4" aria-hidden="true" />
-            Live Ergebnisse
-          </Link>
+          {competition.liveResultsUrl && competition.liveResultsUrl.trim() !== "" && (
+            <Link
+              href={competition.liveResultsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 text-primary hover:underline"
+            >
+              <ExternalLink className="h-4 w-4" aria-hidden="true" />
+              Live Ergebnisse
+            </Link>
+          )}
 
-          <Link
-            href={competition.liveloxUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 text-primary hover:underline"
-          >
-            <ExternalLink className="h-4 w-4" aria-hidden="true" />
-            Livelox
-          </Link>
+          {competition.liveloxUrl && competition.liveloxUrl.trim() !== "" && (
+            <Link
+              href={competition.liveloxUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 text-primary hover:underline"
+            >
+              <ExternalLink className="h-4 w-4" aria-hidden="true" />
+              Livelox
+            </Link>
+          )}
         </div>
 
-        <ResultsQRCode value={competition.liveResultsUrl} />
+        {competition.liveResultsUrl && competition.liveResultsUrl.trim() !== "" && (
+          <ResultsQRCode value={competition.liveResultsUrl} />
+        )}
       </div>
     </div>
   )

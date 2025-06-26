@@ -62,7 +62,6 @@ export const domainConfigs = {
         liveResultsUrl: "https://oresults.eu/events/1776",
         liveloxUrl: "https://www.livelox.com/Events/Show/160808/Hamburg-OL-2025-Sprint-2-Lauf",
       },
-      ,
       {
         id: 4,
         name: "Mitteldistanz",
@@ -77,7 +76,7 @@ export const domainConfigs = {
 } as const
 
 export type Domain = keyof typeof domainConfigs
-export type Competition = (typeof domainConfigs)[Domain]['competitions'][number]
+export type Competition = NonNullable<(typeof domainConfigs)[Domain]['competitions'][number]>
 
 // Helper function to get competitions for a specific domain
 export function getCompetitionsForDomain(domain: string) {
