@@ -58,7 +58,7 @@ export const domainConfigs = {
         name: "Hamburg-Sprint Lauf 2",
         date: "28.06.2025",
         startTime: "2025-06-28T17:00:00",
-        endTime: "2025-06-28T18:30:00",
+        endTime: "2025-06-28T20:00:00",
         liveResultsUrl: "https://oresults.eu/events/1776",
         liveloxUrl: "https://www.livelox.com/Events/Show/160808/Hamburg-OL-2025-Sprint-2-Lauf",
       },
