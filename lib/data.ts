@@ -41,7 +41,7 @@ export const domainConfigs = {
         date: "28.07.2025",
         startTime: "2025-06-27T16:00:00",
         endTime: "2025-06-27T20:00:00",
-        liveResultsUrl: "",
+        liveResultsUrl: "https://oresults.eu/events/1778",
         liveloxUrl: "https://www.livelox.com/Events/Show/160818/Hamburg-OL-2025-Prolog",
       },
       {
