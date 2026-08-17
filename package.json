@@ -22,7 +22,10 @@
     "overrides": {
       "postcss": "^8.5.26",
       "nanoid": "^3.3.18"
-    }
+    },
+    "ignoredBuiltDependencies": [
+      "sharp"
+    ]
   },
   "devDependencies": {
     "@eslint/js": "^9.39.5",
