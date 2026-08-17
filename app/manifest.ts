@@ -7,8 +7,8 @@ export default function manifest(): MetadataRoute.Manifest {
     description: 'Live results and tracking for orienteering competitions',
     start_url: '/',
     display: 'standalone',
-    background_color: '#ffffff',
-    theme_color: '#0e7490',
+    background_color: '#fbfbfa',
+    theme_color: '#a21caf',
     icons: [
       {
         src: '/icon-192.png',

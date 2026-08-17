@@ -9,7 +9,7 @@ export const size = {
 export const contentType = 'image/png'
 
 // Generated favicon — reuses the compass mark from app/opengraph-image.tsx,
-// recolored white-on-brand-cyan.
+// white on the course-overprint magenta used as --primary in globals.css.
 export default function Icon() {
   return new ImageResponse(
     (
@@ -20,7 +20,7 @@ export default function Icon() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: '#0e7490',
+          background: '#a21caf',
           borderRadius: 6,
         }}
       >
