@@ -2,89 +2,41 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
-}
-
 @layer base {
+  /* Light theme.
+     --primary is the magenta of an orienteering course overprint (control
+     circles and course lines are always printed in this purple-magenta), which
+     makes the accent read as "orienteering" rather than as a generic brand
+     colour. #a21caf measures ~6.1:1 as text on --background and ~6.3:1 behind
+     the white --primary-foreground used on filled buttons, so both directions
+     clear WCAG AA (4.5:1) with room to spare. */
   :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 3.9%;
+    --background: 60 20% 98%;
+    --foreground: 240 6% 10%;
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 3.9%;
-    /* Brand cyan (~#0e7490, cyan-700), rather than cyan-600 #0891b2:
-       white text on #0891b2 is only ~3.7:1 contrast (fails WCAG AA 4.5:1
-       for normal text). #0e7490 measures ~5.4:1 against white, so both the
-       "Aktiv" badge (white text on this background) and the results links
-       (this color as text on a white/light background) stay AA-compliant. */
-    --primary: 192 82% 31%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 0 0% 96.1%;
-    --secondary-foreground: 0 0% 9%;
-    --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 45.1%;
-    --accent: 0 0% 96.1%;
-    --accent-foreground: 0 0% 9%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 89.8%;
-    --input: 0 0% 89.8%;
-    --ring: 0 0% 3.9%;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
-    --radius: 0.5rem;
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --muted: 240 5% 96%;
+    --muted-foreground: 240 4% 40%;
+    --border: 240 6% 90%;
+    --primary: 294 72% 40%;
+    --primary-foreground: 0 0% 100%;
+    --radius: 0.625rem;
   }
-  .dark {
-    --background: 0 0% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    /* Lighter cyan (~#22d3ee, cyan-400) for dark backgrounds: ~11:1 as text
-       on the near-black --background, and ~9.9:1 behind the dark
-       --primary-foreground text used on the "Aktiv" badge. */
-    --primary: 188 86% 53%;
-    --primary-foreground: 0 0% 9%;
-    --secondary: 0 0% 14.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 63.9%;
-    --accent: 0 0% 14.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
-    --ring: 0 0% 83.1%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+
+  /* Dark theme. There is no theme toggle, so this is a pure media query - no
+     provider, no blocking inline script, no flash on first paint.
+     The lighter #e879f9 measures ~7.7:1 as text on --background, and the near
+     black --primary-foreground on top of it is the same ratio inverted. */
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --background: 240 8% 7%;
+      --foreground: 0 0% 98%;
+      --card: 240 8% 10%;
+      --muted: 240 8% 12%;
+      --muted-foreground: 240 5% 65%;
+      --border: 240 8% 18%;
+      --primary: 292 91% 73%;
+      --primary-foreground: 240 8% 7%;
+    }
   }
 }
 
@@ -92,7 +44,31 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
+    /* Slightly above the 16px default: this page is read outdoors, at arm's
+       length, often in bright sun. */
+    font-size: 1.0625rem;
+    line-height: 1.55;
+  }
+
+  /* Times sit in a column in the timetable and must not jitter between rows. */
+  time {
+    font-variant-numeric: tabular-nums;
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-primary ring-offset-2 ring-offset-background;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

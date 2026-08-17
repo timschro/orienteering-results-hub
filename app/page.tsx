@@ -1,13 +1,21 @@
 import { headers } from "next/headers"
 import { Compass } from "lucide-react"
 
-import { CompetitionCard } from "@/components/ui/competition-card"
-import { CurrentTime } from "@/components/current-time"
+import { CompetitionRow } from "@/components/competition-row"
+import { FeaturedCompetition } from "@/components/featured-competition"
+import { getCompetitionStatus } from "@/lib/competition-status"
 import { getDomainConfig, resolveDomain } from "@/lib/data"
+import {
+  formatEventDateRange,
+  groupCompetitionsByDay,
+  pickFeaturedCompetition,
+} from "@/lib/utils"
 
 // Server Component: the competition data is a compile-time constant, so the
-// whole list is rendered into the HTML. Crawlers and social previews see the
-// competition names and the results links without running any JavaScript.
+// whole timetable - including which competition is featured and what each
+// status says - is rendered into the HTML. The page is fully usable without
+// JavaScript; components/competition-status.tsx is the only client component,
+// and it only keeps the relative labels ticking.
 export default async function Home() {
   const headersList = await headers()
   // The middleware sets x-domain; fall back to the Host header so the page is
@@ -18,56 +26,98 @@ export default async function Home() {
 
   if (!domainConfig) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <Compass className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-          <h1 className="text-2xl font-bold mb-2">Domain nicht unterstützt</h1>
+      <div className="flex min-h-screen items-center justify-center px-5">
+        <div className="max-w-sm text-center">
+          <Compass className="mx-auto mb-4 h-10 w-10 text-muted-foreground" aria-hidden="true" />
+          <h1 className="mb-2 text-xl font-bold">Domain nicht unterstützt</h1>
           <p className="text-muted-foreground">
-            Diese Domain wird nicht unterstützt. Bitte verwenden Sie eine der unterstützten Domains.
+            Diese Domain wird nicht unterstützt. Bitte verwenden Sie eine der unterstützten
+            Domains.
           </p>
         </div>
       </div>
     )
   }
 
-  // Filter out competitions with empty URLs
-  const visibleCompetitions = domainConfig.competitions.filter((competition) => {
-    const hasLiveResults = competition.liveResultsUrl.trim() !== ""
-    const hasLivelox = competition.liveloxUrl.trim() !== ""
-    return hasLiveResults || hasLivelox
-  })
+  // Competitions without any link have nothing to offer yet.
+  const visibleCompetitions = domainConfig.competitions.filter(
+    (competition) =>
+      competition.liveResultsUrl.trim() !== "" || competition.liveloxUrl.trim() !== ""
+  )
+
+  // One timestamp for the whole render, so every status on the page agrees.
+  const now = Date.now()
+  const featured = pickFeaturedCompetition(visibleCompetitions, now)
+  const days = groupCompetitionsByDay(visibleCompetitions)
+  const hasLivelox = visibleCompetitions.some(
+    (competition) => competition.liveloxUrl.trim() !== ""
+  )
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen">
       <header className="border-b">
-        <div className="container mx-auto py-6 px-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Compass className="h-6 w-6 text-primary" aria-hidden="true" />
-              <h1 className="text-2xl font-bold">{domainConfig.name}</h1>
-            </div>
-            <CurrentTime />
+        <div className="mx-auto flex max-w-2xl items-center gap-3 px-5 py-6">
+          <Compass className="h-7 w-7 shrink-0 text-primary" aria-hidden="true" />
+          <div className="min-w-0">
+            <h1 className="text-xl font-bold tracking-tight text-balance sm:text-2xl">
+              {domainConfig.name}
+            </h1>
+            {visibleCompetitions.length > 0 && (
+              <p className="text-sm text-muted-foreground">
+                {formatEventDateRange(visibleCompetitions)} · {domainConfig.region}
+              </p>
+            )}
           </div>
         </div>
       </header>
 
-      <main className="container mx-auto py-8 px-4">
+      <main className="mx-auto max-w-2xl px-5 py-8">
         {visibleCompetitions.length === 0 ? (
-          <div className="text-center py-12">
-            <Compass className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <h2 className="text-xl font-semibold mb-2">Keine Live-Ergebnisse verfügbar</h2>
+          <div className="py-16 text-center">
+            <h2 className="mb-2 text-lg font-semibold">Noch keine Ergebnisse</h2>
             <p className="text-muted-foreground">
-              Derzeit sind keine Live-Ergebnisse für diese Veranstaltung verfügbar.
+              Für diese Veranstaltung sind noch keine Live-Ergebnisse verlinkt.
             </p>
           </div>
         ) : (
-          <div className="grid gap-6 md:grid-cols-2">
-            {visibleCompetitions.map((competition) => (
-              <CompetitionCard key={competition.id} competition={competition} />
+          <>
+            {featured && (
+              <FeaturedCompetition
+                competition={featured}
+                status={getCompetitionStatus(featured.startTime, featured.endTime, now)}
+              />
+            )}
+
+            {days.map((day) => (
+              <section key={day.date} className="mb-8 last:mb-0">
+                <h2 className="sticky top-0 z-10 -mx-5 bg-background/95 px-5 py-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground backdrop-blur">
+                  {day.heading}
+                </h2>
+                <ul className="divide-y">
+                  {day.competitions.map((competition) => (
+                    <CompetitionRow
+                      key={competition.id}
+                      competition={competition}
+                      status={getCompetitionStatus(
+                        competition.startTime,
+                        competition.endTime,
+                        now
+                      )}
+                    />
+                  ))}
+                </ul>
+              </section>
             ))}
-          </div>
+          </>
         )}
       </main>
+
+      <footer className="mx-auto max-w-2xl px-5 pb-10 text-sm text-muted-foreground">
+        <p>
+          {domainConfig.organization} · Ergebnisse von OResults
+          {hasLivelox && ", Karten von Livelox"}
+        </p>
+      </footer>
     </div>
   )
 }

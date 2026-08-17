@@ -89,7 +89,7 @@ export const DOMAIN_CONFIGS = {
     description: "Live results for Hamburg orienteering events",
     region: "Hamburg",
     organization: "Hamburg-OL",
-    // Names, dates and oresults event IDs are taken from oresults.eu
+    // Names, dates and OResults event IDs are taken from oresults.eu
     // (events 3655-3658, 28.-30.08.2026).
     //
     // Livelox URLs are still empty: the events are not set up there yet. The

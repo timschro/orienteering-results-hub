@@ -22,12 +22,14 @@ export function middleware(request: NextRequest) {
     response.headers.set('x-domain', domain)
   }
 
-  // The page content is a compile-time constant, so it is safe for the CDN to
-  // serve it to everyone on the same host. The time-dependent parts (clock,
-  // "Aktiv" badge) are computed on the client after hydration.
+  // The competition data is a compile-time constant, so it is safe for the CDN
+  // to serve the same HTML to everyone on a host. The page now renders its own
+  // time-dependent parts on the server (which competition is featured, each
+  // status label), so s-maxage caps how stale those can get: 60s is nothing
+  // against a race that runs for hours, and still absorbs nearly every request.
   response.headers.set(
     'Cache-Control',
-    'public, max-age=0, s-maxage=300, stale-while-revalidate=3600'
+    'public, max-age=0, s-maxage=60, stale-while-revalidate=3600'
   )
 
   return response

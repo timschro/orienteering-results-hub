@@ -17,7 +17,7 @@ export default async function Image() {
       <div
         style={{
           fontSize: 128,
-          background: 'white',
+          background: '#fbfbfa',
           width: '100%',
           height: '100%',
           display: 'flex',
@@ -32,7 +32,7 @@ export default async function Image() {
           alignItems: 'center', 
           justifyContent: 'center',
           marginBottom: 24,
-          color: '#0e7490' 
+          color: '#a21caf' 
         }}>
           <svg width="128" height="128" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="12" cy="12" r="10" />
@@ -48,13 +48,13 @@ export default async function Image() {
           <div style={{ 
             fontSize: 56, 
             fontWeight: 'bold',
-            color: '#020617'
+            color: '#18181b'
           }}>
             Orienteering Results Hub
           </div>
           <div style={{ 
             fontSize: 32,
-            color: '#64748b',
+            color: '#52525b',
             marginTop: 16
           }}>
             Live results and tracking for competitions

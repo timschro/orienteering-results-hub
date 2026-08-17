@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
-import { ThemeProvider } from '@/components/theme-provider'
 import { headers } from 'next/headers'
 import { DEFAULT_DOMAIN, getDomainConfig, resolveDomain } from '@/lib/data'
 
@@ -15,9 +14,10 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
+  // Matches --background in app/globals.css.
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: 'white' },
-    { media: '(prefers-color-scheme: dark)', color: 'black' },
+    { media: '(prefers-color-scheme: light)', color: '#fbfbfa' },
+    { media: '(prefers-color-scheme: dark)', color: '#111114' },
   ],
 }
 
@@ -68,22 +68,19 @@ export default async function RootLayout({
     // hamburg-ol.de) serve German-only content. If a non-German event is
     // ever added, drive this from the per-domain config in lib/data.ts
     // instead of hardcoding it.
-    // suppressHydrationWarning is required here because next-themes
-    // (ThemeProvider attribute="class") mutates the class attribute on
-    // <html> before React hydrates — see https://github.com/pacocoursey/next-themes#with-app
-    <html lang="de" className={inter.variable} suppressHydrationWarning>
+    // Dark mode is a plain prefers-color-scheme media query in globals.css,
+    // so nothing mutates <html> before hydration and no suppression is needed.
+    <html lang="de" className={inter.variable}>
       <head>
+        {/* www.livelox.com is where the links actually point; preconnecting to
+            the bare apex would warm up the wrong origin. */}
         <link rel="preconnect" href="https://oresults.eu" />
-        <link rel="preconnect" href="https://livelox.com" />
+        <link rel="preconnect" href="https://www.livelox.com" />
         <link rel="dns-prefetch" href="https://oresults.eu" />
-        <link rel="dns-prefetch" href="https://livelox.com" />
+        <link rel="dns-prefetch" href="https://www.livelox.com" />
         <meta name="x-domain" content={domain} />
       </head>
-      <body className="antialiased">
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          {children}
-        </ThemeProvider>
-      </body>
+      <body className="antialiased">{children}</body>
     </html>
   )
 }
