@@ -38,7 +38,7 @@ async function testDomain(domain) {
         try {
           const response = JSON.parse(data);
           resolve({ domain, status: res.statusCode, data: response });
-        } catch (e) {
+        } catch (_e) {
           reject({ domain, error: 'Failed to parse JSON', data });
         }
       });
@@ -73,15 +73,35 @@ async function runTests() {
   console.log('Test completed!');
 }
 
-// Check if server is running
-const checkServer = http.get(`http://${host}:${port}/api/domain`, (res) => {
-  if (res.statusCode === 200) {
-    runTests();
-  } else {
-    console.log(`❌ Server not responding correctly (status: ${res.statusCode})`);
+// Check if the server is running.
+// The /api/domain route rejects unsupported hosts with a 400, so the health
+// check has to send a Host header the route actually accepts - otherwise it
+// arrives as "localhost" and this check can never succeed.
+http
+  .get(
+    {
+      hostname: host,
+      port: port,
+      path: '/api/domain',
+      headers: {
+        Host: domains[0],
+      },
+    },
+    (res) => {
+      // Drain the response so the socket can close.
+      res.resume();
+
+      if (res.statusCode === 200) {
+        runTests();
+      } else {
+        console.log(`❌ Server not responding correctly (status: ${res.statusCode})`);
+        console.log('Make sure the development server is running with: npm run dev');
+        process.exitCode = 1;
+      }
+    }
+  )
+  .on('error', (err) => {
+    console.log(`❌ Cannot connect to server: ${err.message}`);
     console.log('Make sure the development server is running with: npm run dev');
-  }
-}).on('error', (err) => {
-  console.log(`❌ Cannot connect to server: ${err.message}`);
-  console.log('Make sure the development server is running with: npm run dev');
-}); 
+    process.exitCode = 1;
+  });

@@ -4,14 +4,22 @@ import { memo, useEffect, useState } from "react"
 import { ExternalLink, Clock } from "lucide-react"
 import Link from "next/link"
 import { Competition } from "@/lib/data"
-import { isCompetitionActive, formatTimeWindow } from "@/lib/utils"
-import { ResultsQRCode } from "@/app/page"
+import {
+  isCompetitionActive,
+  formatCompetitionDate,
+  formatTimeWindow,
+  toCompetitionDateISO,
+} from "@/lib/utils"
+import { ResultsQRCode } from "@/components/results-qr-code"
 
 interface CompetitionCardProps {
   competition: Competition
 }
 
 export const CompetitionCard = memo(function CompetitionCard({ competition }: CompetitionCardProps) {
+  // Deliberately starts `false` on the server: the HTML is CDN-cacheable, so it
+  // must not bake in a badge state that goes stale. The client corrects it on
+  // hydration and re-checks every minute.
   const [isActive, setIsActive] = useState(false)
 
   // Check if competition is active
@@ -45,7 +53,9 @@ export const CompetitionCard = memo(function CompetitionCard({ competition }: Co
       </div>
 
       <div className="flex items-center gap-1 text-muted-foreground mb-4">
-        <time dateTime={competition.startTime.split('T')[0]}>{competition.date}</time>
+        <time dateTime={toCompetitionDateISO(competition.startTime)}>
+          {formatCompetitionDate(competition.startTime)}
+        </time>
         <span className="mx-1" aria-hidden="true">•</span>
         <Clock className="h-3 w-3" aria-hidden="true" />
         <p className="text-sm">{formatTimeWindow(competition.startTime, competition.endTime)}</p>

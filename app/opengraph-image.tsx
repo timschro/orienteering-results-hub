@@ -1,9 +1,5 @@
 import { ImageResponse } from 'next/og'
-import { Compass } from 'lucide-react'
- 
-// Route segment config
-export const runtime = 'edge'
- 
+
 // Image metadata
 export const alt = 'Orienteering Results Hub'
 export const size = {
@@ -36,7 +32,7 @@ export default async function Image() {
           alignItems: 'center', 
           justifyContent: 'center',
           marginBottom: 24,
-          color: '#0891b2' 
+          color: '#0e7490' 
         }}>
           <svg width="128" height="128" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="12" cy="12" r="10" />
