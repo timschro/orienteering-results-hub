@@ -3,10 +3,13 @@ import type { CompetitionStatus as Status } from "@/lib/competition-status"
 import { cn, formatStartTime } from "@/lib/utils"
 import { CompetitionLinks } from "@/components/competition-links"
 import { CompetitionStatus } from "@/components/competition-status"
+import { StartListBadge } from "@/components/start-list-badge"
 
 interface CompetitionRowProps {
   competition: Competition
   status: Status
+  /** OResults reports a start list for this competition. See lib/oresults.ts. */
+  hasStartList?: boolean
 }
 
 /**
@@ -14,7 +17,11 @@ interface CompetitionRowProps {
  * be full-width targets; from `sm` up everything sits on a single line and the
  * page reads like the programme board at the arena.
  */
-export function CompetitionRow({ competition, status }: CompetitionRowProps) {
+export function CompetitionRow({
+  competition,
+  status,
+  hasStartList = false,
+}: CompetitionRowProps) {
   return (
     <li className="flex flex-col gap-3 py-4 sm:flex-row sm:items-center sm:gap-4">
       <div
@@ -33,6 +40,8 @@ export function CompetitionRow({ competition, status }: CompetitionRowProps) {
         </time>
 
         <h3 className="min-w-0 flex-1 font-semibold">{competition.name}</h3>
+
+        {hasStartList && <StartListBadge />}
 
         <CompetitionStatus
           startTime={competition.startTime}

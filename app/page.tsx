@@ -5,6 +5,7 @@ import { CompetitionRow } from "@/components/competition-row"
 import { FeaturedCompetition } from "@/components/featured-competition"
 import { getCompetitionStatus } from "@/lib/competition-status"
 import { getDomainConfig, resolveDomain } from "@/lib/data"
+import { hasPublishedStartList } from "@/lib/oresults"
 import {
   formatEventDateRange,
   groupCompetitionsByDay,
@@ -53,6 +54,18 @@ export default async function Home() {
     (competition) => competition.liveloxUrl.trim() !== ""
   )
 
+  // Which competitions already have a start list on OResults. Only races
+  // inside the pre-race window are actually asked about, and every failure
+  // resolves to `null`, so this cannot break the render (see lib/oresults.ts).
+  const startLists = new Map(
+    await Promise.all(
+      visibleCompetitions.map(
+        async (competition) =>
+          [competition.id, await hasPublishedStartList(competition, now)] as const
+      )
+    )
+  )
+
   return (
     <div className="min-h-screen">
       <header className="border-b">
@@ -85,6 +98,7 @@ export default async function Home() {
               <FeaturedCompetition
                 competition={featured}
                 status={getCompetitionStatus(featured.startTime, featured.endTime, now)}
+                hasStartList={startLists.get(featured.id) === true}
               />
             )}
 
@@ -103,6 +117,7 @@ export default async function Home() {
                         competition.endTime,
                         now
                       )}
+                      hasStartList={startLists.get(competition.id) === true}
                     />
                   ))}
                 </ul>

@@ -3,10 +3,13 @@ import type { CompetitionStatus as Status } from "@/lib/competition-status"
 import { formatCompetitionDate, formatTimeWindow } from "@/lib/utils"
 import { CompetitionLinks } from "@/components/competition-links"
 import { CompetitionStatus } from "@/components/competition-status"
+import { StartListBadge } from "@/components/start-list-badge"
 
 interface FeaturedCompetitionProps {
   competition: Competition
   status: Status
+  /** OResults reports a start list for this competition. See lib/oresults.ts. */
+  hasStartList?: boolean
 }
 
 /**
@@ -14,7 +17,11 @@ interface FeaturedCompetitionProps {
  * question the page exists for - "which race is on and where are the results" -
  * so it sits in the first screenful and gets the accent-filled button.
  */
-export function FeaturedCompetition({ competition, status }: FeaturedCompetitionProps) {
+export function FeaturedCompetition({
+  competition,
+  status,
+  hasStartList = false,
+}: FeaturedCompetitionProps) {
   const isLive = status.kind === "live"
 
   return (
@@ -32,12 +39,15 @@ export function FeaturedCompetition({ competition, status }: FeaturedCompetition
           <h2 id="featured-heading" className="text-2xl font-bold tracking-tight">
             {competition.name}
           </h2>
-          <CompetitionStatus
-            startTime={competition.startTime}
-            endTime={competition.endTime}
-            initial={status}
-            className="mt-1.5 text-base"
-          />
+          <div className="mt-1.5 flex shrink-0 items-center gap-2">
+            {hasStartList && <StartListBadge />}
+            <CompetitionStatus
+              startTime={competition.startTime}
+              endTime={competition.endTime}
+              initial={status}
+              className="text-base"
+            />
+          </div>
         </div>
 
         <p className="text-sm text-muted-foreground">
