@@ -3,7 +3,7 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import { ThemeProvider } from '@/components/theme-provider'
 import { headers } from 'next/headers'
-import { getDomainConfig } from '@/lib/data'
+import { DEFAULT_DOMAIN, getDomainConfig, resolveDomain } from '@/lib/data'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -23,9 +23,13 @@ export const viewport: Viewport = {
 
 export async function generateMetadata(): Promise<Metadata> {
   const headersList = await headers()
-  const domain = headersList.get('x-domain') || 'results.ol-dm.de'
+  // x-domain is set by the middleware; the Host header is the fallback.
+  const domain =
+    headersList.get('x-domain') ||
+    resolveDomain(headersList.get('host')) ||
+    DEFAULT_DOMAIN
   const domainConfig = getDomainConfig(domain)
-  
+
   const title = domainConfig?.name || 'Orienteering Results Hub'
   const description = `Live results and tracking for ${domainConfig?.name || 'orienteering competitions'}`
   
@@ -54,10 +58,20 @@ export default async function RootLayout({
   children: React.ReactNode
 }>) {
   const headersList = await headers()
-  const domain = headersList.get('x-domain') || 'results.ol-dm.de'
-  
+  const domain =
+    headersList.get('x-domain') ||
+    resolveDomain(headersList.get('host')) ||
+    DEFAULT_DOMAIN
+
   return (
-    <html lang="en" className={inter.variable}>
+    // lang is hardcoded to "de" because both current domains (ol-dm.de,
+    // hamburg-ol.de) serve German-only content. If a non-German event is
+    // ever added, drive this from the per-domain config in lib/data.ts
+    // instead of hardcoding it.
+    // suppressHydrationWarning is required here because next-themes
+    // (ThemeProvider attribute="class") mutates the class attribute on
+    // <html> before React hydrates — see https://github.com/pacocoursey/next-themes#with-app
+    <html lang="de" className={inter.variable} suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://oresults.eu" />
         <link rel="preconnect" href="https://livelox.com" />

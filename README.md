@@ -73,8 +73,7 @@ npm run test:domains
 │   └── ui/               # UI components
 ├── hooks/                # Custom React hooks
 ├── lib/                  # Utility functions and data
-│   ├── data.ts          # Competition data per domain
-│   ├── domains.ts       # Domain configuration
+│   ├── data.ts          # Domain + competition configuration (single source of truth)
 │   └── utils.ts         # Utility functions
 ├── middleware.ts         # Next.js middleware for domain detection
 └── scripts/             # Utility scripts
@@ -84,48 +83,55 @@ npm run test:domains
 
 ### Adding New Domains
 
-1. Add the domain to `lib/domains.ts`:
-```typescript
-export const SUPPORTED_DOMAINS = [
-  'results.ol-dm.de',
-  'results.hamburg-ol.de',
-  'results.new-domain.de', // Add new domain
-] as const
-```
+`lib/data.ts` is the single source of truth: `SUPPORTED_DOMAINS` (and therefore
+the middleware allowlist) is derived from the keys of `DOMAIN_CONFIGS`, so
+adding a domain is one edit in one place.
 
-2. Add domain configuration:
 ```typescript
 export const DOMAIN_CONFIGS = {
   // ... existing configs
   'results.new-domain.de': {
-    name: 'New Domain OL',
+    name: 'New Domain OL',           // shown in the header and the <title>
     description: 'Live results for new domain events',
     region: 'Region',
     organization: 'Organization',
-  },
-}
-```
-
-3. Add competition data to `lib/data.ts`:
-```typescript
-export const domainConfigs = {
-  // ... existing configs
-  'results.new-domain.de': {
-    name: 'New Domain OL',
     competitions: [
       {
         id: 1,
         name: "Competition Name",
-        date: "DD.MM.YYYY",
-        startTime: "YYYY-MM-DDTHH:MM:SS",
-        endTime: "YYYY-MM-DDTHH:MM:SS",
+        startTime: "YYYY-MM-DDTHH:MM:SS+02:00",
+        endTime: "YYYY-MM-DDTHH:MM:SS+02:00",
         liveResultsUrl: "https://oresults.eu/events/XXXX",
         liveloxUrl: "https://www.livelox.com/Events/Show/XXXX/Event-Name",
       },
     ]
   }
-}
+} satisfies Record<string, DomainConfig>
 ```
+
+#### Timestamps
+
+`startTime`/`endTime` must carry an explicit UTC offset — `+02:00` during CEST
+(late March to late October) and `+01:00` during CET. Without it the timestamp
+is parsed in the *visitor's* timezone and the "Aktiv" badge fires at the wrong
+wall-clock time outside Germany.
+
+There is no separate `date` field: the displayed date (`27.06.2025`) is derived
+from `startTime` and rendered in `Europe/Berlin`, so it cannot drift from the
+machine-readable timestamp.
+
+### Hosts and rendering
+
+- Supported domains are served their own configuration.
+- `localhost`, `127.0.0.1` and `*.vercel.app` (local dev and preview
+  deployments) are served the default domain (`DEFAULT_DOMAIN` in
+  `lib/data.ts`, currently `results.hamburg-ol.de`) instead of being redirected.
+- Any other host renders the "Domain nicht unterstützt" page.
+
+The home page is a Server Component: the competition list, including every
+results link, is in the initial HTML for crawlers and social previews. Only the
+clock, the "Aktiv" badge and the QR code are client-side, which keeps the
+response cacheable by the CDN (`s-maxage`, set in `middleware.ts`).
 
 ## Deployment
 
