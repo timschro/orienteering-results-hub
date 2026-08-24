@@ -92,9 +92,10 @@ export const DOMAIN_CONFIGS = {
     // Names, dates and OResults event IDs are taken from oresults.eu
     // (events 3655-3658, 28.-30.08.2026).
     //
-    // Livelox URLs are still empty: the events are not set up there yet. The
-    // card hides the Livelox link while `liveloxUrl` is "", so an empty string
-    // is the correct placeholder - do not use a dummy URL.
+    // Livelox has the two sprints ("1./2. Lauf"); Prolog and Mitteldistanz are
+    // not set up there yet. The card hides the Livelox link while `liveloxUrl`
+    // is "", so an empty string is the correct placeholder - do not use a
+    // dummy URL.
     competitions: [
       {
         id: 1,
@@ -111,7 +112,8 @@ export const DOMAIN_CONFIGS = {
         startTime: "2026-08-29T11:00:00+02:00",
         endTime: "2026-08-29T14:00:00+02:00",
         liveResultsUrl: "https://oresults.eu/events/3656/results",
-        liveloxUrl: "",
+        liveloxUrl:
+          "https://www.livelox.com/Events/Show/199868/Hamburg-Sprint-2026-1-Lauf",
       },
       {
         id: 3,
@@ -119,7 +121,8 @@ export const DOMAIN_CONFIGS = {
         startTime: "2026-08-29T15:00:00+02:00",
         endTime: "2026-08-29T18:00:00+02:00",
         liveResultsUrl: "https://oresults.eu/events/3657/results",
-        liveloxUrl: "",
+        liveloxUrl:
+          "https://www.livelox.com/Events/Show/199869/Hamburg-Sprint-2026-2-Lauf",
       },
       {
         id: 4,
