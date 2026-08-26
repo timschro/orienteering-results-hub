@@ -103,6 +103,7 @@ export const DOMAIN_CONFIGS = {
       {
         id: 1,
         name: "Competition Name",
+        race: "middleDistance",          // optional; see "Race names" below
         startTime: "YYYY-MM-DDTHH:MM:SS+02:00",
         endTime: "YYYY-MM-DDTHH:MM:SS+02:00",
         liveResultsUrl: "https://oresults.eu/events/XXXX",
@@ -153,6 +154,33 @@ The switcher in the header is nine plain links and no JavaScript; opening one
 of them *is* the choice, which is what the cookie records. It lists the default
 language first and the rest alphabetically by endonym, which is the order
 `LOCALE_META` is authored in.
+
+### Race names
+
+A competition's `name` is shown as-is in every language, which is what a
+proper noun wants. When the race is one of the standard orienteering formats,
+set `race` as well and the title follows the reader's language instead:
+
+```typescript
+{ id: 1, name: "Prolog",        race: "prologue" }                  // → Prologue, Proloog, Prólogo
+{ id: 2, name: "Sprint 1",      race: "sprint", number: 1 }         // → Sprint 1 everywhere
+{ id: 4, name: "Mitteldistanz", race: "middleDistance" }            // → Medeldistans, Keskmaa
+```
+
+The vocabulary is `RaceFormat` in `lib/dictionaries.ts`. It is closed on
+purpose: "Mitteldistanz" means the same thing at every event, so it is
+translated once there rather than nine times per race in `lib/data.ts`, and
+adding a race stays a single edit. Names are translated whole rather than
+composed from parts — French reverses the word order of "Sprint
+Qualifikation", and a composed name would have to encode that.
+
+`number` is appended after the translated name to tell repeated runs of one
+format apart. Every language served puts the numeral last, so it needs no
+translation.
+
+A format that is not in the vocabulary either gets added to it (one edit plus
+one line per language, enforced by the compiler) or is left out entirely, in
+which case `name` carries it untranslated.
 
 ### Adding a language
 

@@ -1,7 +1,7 @@
 import type { Competition } from "@/lib/data"
 import type { CompetitionStatus as Status } from "@/lib/competition-status"
 import type { Translation } from "@/lib/dictionaries"
-import { cn, formatStartTime } from "@/lib/utils"
+import { cn, competitionName, formatStartTime } from "@/lib/utils"
 import { CompetitionLinks } from "@/components/competition-links"
 import { CompetitionStatus } from "@/components/competition-status"
 
@@ -41,7 +41,9 @@ export function CompetitionRow({
           {formatStartTime(competition.startTime, translation.intl)}
         </time>
 
-        <h3 className="min-w-0 flex-1 font-semibold">{competition.name}</h3>
+        <h3 className="min-w-0 flex-1 font-semibold">
+          {competitionName(competition, translation.t)}
+        </h3>
 
         <CompetitionStatus
           startTime={competition.startTime}

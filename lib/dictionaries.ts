@@ -1,7 +1,7 @@
 // Every user-visible string on the page, per language.
 //
 // Server-only by construction: importing this from a client component would
-// ship all seven languages to every visitor. The one place the browser needs
+// ship every language to every visitor. The one place the browser needs
 // translated text is the ticking status label, and components/competition-row
 // hands it the `StatusStrings` slice as a prop instead (see
 // lib/competition-status.ts).
@@ -13,10 +13,36 @@
 import { intlLocale, type Locale } from "@/lib/i18n"
 import type { StatusStrings } from "@/lib/competition-status"
 
+/**
+ * The standard orienteering race formats, which is what the competitions on
+ * these domains are actually named after. A closed vocabulary rather than a
+ * per-competition translation: "Mitteldistanz" means the same thing at every
+ * event, so it is translated once here instead of nine times per race in
+ * lib/data.ts - and adding a race stays the single edit it was.
+ *
+ * Names are translated whole rather than composed from parts. "Qualification
+ * sprint" in French reverses the German word order, and a composed name would
+ * have to encode that; a phrase per format does not.
+ *
+ * A competition whose name is not one of these - a proper noun, or a format
+ * not listed - simply leaves `race` unset in lib/data.ts and keeps its `name`
+ * in every language, which is the right answer for a proper noun anyway.
+ */
+export type RaceFormat =
+  | "prologue"
+  | "sprint"
+  | "middleDistance"
+  | "sprintQualification"
+  | "sprintFinal"
+  | "knockoutSprintSemifinal"
+  | "knockoutSprintFinal"
+  | "sprintRelay"
+
 export interface Dictionary {
   unsupportedDomain: { title: string; body: string }
   empty: { title: string; body: string }
   featured: { live: string; next: string }
+  races: Record<RaceFormat, string>
   links: {
     startList: string
     /** Accessible names. `{competition}` is the competition's own name. */
@@ -49,6 +75,16 @@ const dictionaries: Record<Locale, Dictionary> = {
       body: "Für diese Veranstaltung sind noch keine Live-Ergebnisse verlinkt.",
     },
     featured: { live: "Jetzt live", next: "Als Nächstes" },
+    races: {
+      prologue: "Prolog",
+      sprint: "Sprint",
+      middleDistance: "Mitteldistanz",
+      sprintQualification: "Sprint Qualifikation",
+      sprintFinal: "Sprint Finale",
+      knockoutSprintSemifinal: "K.O.-Sprint Halbfinale",
+      knockoutSprintFinal: "K.O.-Sprint Finale",
+      sprintRelay: "Sprintstaffel",
+    },
     links: {
       startList: "Startliste",
       oresults: "{competition} bei OResults",
@@ -83,6 +119,16 @@ const dictionaries: Record<Locale, Dictionary> = {
       body: "Der er endnu ikke linket til liveresultater for dette arrangement.",
     },
     featured: { live: "Live nu", next: "Næste" },
+    races: {
+      prologue: "Prolog",
+      sprint: "Sprint",
+      middleDistance: "Mellemdistance",
+      sprintQualification: "Sprintkvalifikation",
+      sprintFinal: "Sprintfinale",
+      knockoutSprintSemifinal: "KO-sprint semifinale",
+      knockoutSprintFinal: "KO-sprint finale",
+      sprintRelay: "Sprintstafet",
+    },
     links: {
       startList: "Startliste",
       oresults: "{competition} på OResults",
@@ -117,6 +163,16 @@ const dictionaries: Record<Locale, Dictionary> = {
       body: "Selle võistluse kohta ei ole veel otsetulemusi lingitud.",
     },
     featured: { live: "Praegu otse", next: "Järgmisena" },
+    races: {
+      prologue: "Proloog",
+      sprint: "Sprint",
+      middleDistance: "Keskmaa",
+      sprintQualification: "Sprindi kvalifikatsioon",
+      sprintFinal: "Sprindi finaal",
+      knockoutSprintSemifinal: "KO-sprindi poolfinaal",
+      knockoutSprintFinal: "KO-sprindi finaal",
+      sprintRelay: "Sprindi teatejooks",
+    },
     links: {
       startList: "Stardiprotokoll",
       oresults: "{competition} OResultsis",
@@ -153,6 +209,16 @@ const dictionaries: Record<Locale, Dictionary> = {
       body: "No live results have been linked for this event yet.",
     },
     featured: { live: "Live now", next: "Up next" },
+    races: {
+      prologue: "Prologue",
+      sprint: "Sprint",
+      middleDistance: "Middle distance",
+      sprintQualification: "Sprint qualification",
+      sprintFinal: "Sprint final",
+      knockoutSprintSemifinal: "Knock-out sprint semi-final",
+      knockoutSprintFinal: "Knock-out sprint final",
+      sprintRelay: "Sprint relay",
+    },
     links: {
       startList: "Start list",
       oresults: "{competition} on OResults",
@@ -187,6 +253,16 @@ const dictionaries: Record<Locale, Dictionary> = {
       body: "Todavía no hay resultados en directo enlazados para esta competición.",
     },
     featured: { live: "En directo", next: "A continuación" },
+    races: {
+      prologue: "Prólogo",
+      sprint: "Sprint",
+      middleDistance: "Distancia media",
+      sprintQualification: "Clasificación de sprint",
+      sprintFinal: "Final de sprint",
+      knockoutSprintSemifinal: "Semifinal KO sprint",
+      knockoutSprintFinal: "Final KO sprint",
+      sprintRelay: "Relevos de sprint",
+    },
     links: {
       startList: "Lista de salida",
       oresults: "{competition} en OResults",
@@ -221,6 +297,16 @@ const dictionaries: Record<Locale, Dictionary> = {
       body: "Aucun résultat en direct n'est encore lié à cette compétition.",
     },
     featured: { live: "En direct", next: "À suivre" },
+    races: {
+      prologue: "Prologue",
+      sprint: "Sprint",
+      middleDistance: "Moyenne distance",
+      sprintQualification: "Qualification sprint",
+      sprintFinal: "Finale sprint",
+      knockoutSprintSemifinal: "Demi-finale KO sprint",
+      knockoutSprintFinal: "Finale KO sprint",
+      sprintRelay: "Relais sprint",
+    },
     links: {
       startList: "Liste de départ",
       oresults: "{competition} sur OResults",
@@ -255,6 +341,16 @@ const dictionaries: Record<Locale, Dictionary> = {
       body: "Er zijn nog geen live-uitslagen gekoppeld aan dit evenement.",
     },
     featured: { live: "Nu live", next: "Hierna" },
+    races: {
+      prologue: "Proloog",
+      sprint: "Sprint",
+      middleDistance: "Middenafstand",
+      sprintQualification: "Sprintkwalificatie",
+      sprintFinal: "Sprintfinale",
+      knockoutSprintSemifinal: "KO-sprint halve finale",
+      knockoutSprintFinal: "KO-sprint finale",
+      sprintRelay: "Sprintestafette",
+    },
     links: {
       startList: "Startlijst",
       oresults: "{competition} op OResults",
@@ -289,6 +385,16 @@ const dictionaries: Record<Locale, Dictionary> = {
       body: "Det er ennå ikke lenket til liveresultater for dette arrangementet.",
     },
     featured: { live: "Live nå", next: "Neste" },
+    races: {
+      prologue: "Prolog",
+      sprint: "Sprint",
+      middleDistance: "Mellomdistanse",
+      sprintQualification: "Sprintkvalifisering",
+      sprintFinal: "Sprintfinale",
+      knockoutSprintSemifinal: "KO-sprint semifinale",
+      knockoutSprintFinal: "KO-sprint finale",
+      sprintRelay: "Sprintstafett",
+    },
     links: {
       startList: "Startliste",
       oresults: "{competition} på OResults",
@@ -323,6 +429,16 @@ const dictionaries: Record<Locale, Dictionary> = {
       body: "Inga liveresultat är länkade för det här arrangemanget än.",
     },
     featured: { live: "Live nu", next: "Härnäst" },
+    races: {
+      prologue: "Prolog",
+      sprint: "Sprint",
+      middleDistance: "Medeldistans",
+      sprintQualification: "Sprintkval",
+      sprintFinal: "Sprintfinal",
+      knockoutSprintSemifinal: "KO-sprint semifinal",
+      knockoutSprintFinal: "KO-sprint final",
+      sprintRelay: "Sprintstafett",
+    },
     links: {
       startList: "Startlista",
       oresults: "{competition} på OResults",

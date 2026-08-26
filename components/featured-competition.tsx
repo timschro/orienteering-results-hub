@@ -1,7 +1,11 @@
 import type { Competition } from "@/lib/data"
 import type { CompetitionStatus as Status } from "@/lib/competition-status"
 import type { Translation } from "@/lib/dictionaries"
-import { formatCompetitionDate, formatTimeWindow } from "@/lib/utils"
+import {
+  competitionName,
+  formatCompetitionDate,
+  formatTimeWindow,
+} from "@/lib/utils"
 import { CompetitionLinks } from "@/components/competition-links"
 import { CompetitionStatus } from "@/components/competition-status"
 
@@ -40,7 +44,7 @@ export function FeaturedCompetition({
       >
         <div className="mb-1 flex items-start justify-between gap-4">
           <h2 id="featured-heading" className="text-2xl font-bold tracking-tight">
-            {competition.name}
+            {competitionName(competition, t)}
           </h2>
           <CompetitionStatus
             startTime={competition.startTime}

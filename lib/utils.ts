@@ -2,6 +2,7 @@ import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 
 import type { Competition } from "@/lib/data"
+import type { Dictionary } from "@/lib/dictionaries"
 import { berlinFormatter, toCompetitionDateISO } from "@/lib/competition-status"
 
 export function cn(...inputs: ClassValue[]) {
@@ -15,6 +16,20 @@ export function cn(...inputs: ClassValue[]) {
 // Every formatter takes an `intl` BCP 47 tag (from lib/i18n.ts) and is pinned
 // to Europe/Berlin by `berlinFormatter`. The event is in Germany, so the clock
 // is always the organiser's; only the notation follows the visitor's language.
+
+/**
+ * What to call a competition in the reader's language.
+ *
+ * A competition that names one of the standard formats (`race` in
+ * lib/data.ts) is titled from the dictionary; anything else keeps the name
+ * the organiser gave it, untranslated, which is what a proper noun wants.
+ */
+export function competitionName(competition: Competition, t: Dictionary): string {
+  if (!competition.race) return competition.name
+
+  const format = t.races[competition.race]
+  return competition.number === undefined ? format : `${format} ${competition.number}`
+}
 
 // Displayed date, derived from startTime (ex: 27.06.2025 / 27/06/2025)
 export function formatCompetitionDate(startTime: string, intl: string): string {
