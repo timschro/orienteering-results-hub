@@ -3,8 +3,7 @@
 @tailwind utilities;
 
 @layer base {
-  /* Light theme.
-     --primary is the magenta of an orienteering course overprint (control
+  /* --primary is the magenta of an orienteering course overprint (control
      circles and course lines are always printed in this purple-magenta), which
      makes the accent read as "orienteering" rather than as a generic brand
      colour. #a21caf measures ~6.1:1 as text on --background and ~6.3:1 behind
@@ -20,23 +19,6 @@
     --primary: 294 72% 40%;
     --primary-foreground: 0 0% 100%;
     --radius: 0.625rem;
-  }
-
-  /* Dark theme. There is no theme toggle, so this is a pure media query - no
-     provider, no blocking inline script, no flash on first paint.
-     The lighter #e879f9 measures ~7.7:1 as text on --background, and the near
-     black --primary-foreground on top of it is the same ratio inverted. */
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --background: 240 8% 7%;
-      --foreground: 0 0% 98%;
-      --card: 240 8% 10%;
-      --muted: 240 8% 12%;
-      --muted-foreground: 240 5% 65%;
-      --border: 240 8% 18%;
-      --primary: 292 91% 73%;
-      --primary-foreground: 240 8% 7%;
-    }
   }
 }
 
