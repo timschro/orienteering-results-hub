@@ -38,8 +38,12 @@ export function LanguageSwitcher({ translation }: LanguageSwitcherProps) {
       </summary>
 
       {/* right-0 so the panel opens inwards from the header's right edge and
-          never pushes the page wide enough to scroll sideways on a phone. */}
-      <ul className="absolute right-0 z-20 mt-1 min-w-44 overflow-hidden rounded-md border bg-card py-1 shadow-lg">
+          never pushes the page wide enough to scroll sideways on a phone.
+          The height cap matters because the panel is positioned out of flow:
+          nine 44px rows are taller than a phone held sideways, and the
+          document would not grow to let anyone scroll down to the last of
+          them. Capped, it scrolls itself instead. */}
+      <ul className="absolute right-0 z-20 mt-1 max-h-[70vh] min-w-44 overflow-y-auto overscroll-contain rounded-md border bg-card py-1 shadow-lg">
         {LOCALES.map((option) => {
           const isCurrent = option === locale
 
@@ -47,7 +51,10 @@ export function LanguageSwitcher({ translation }: LanguageSwitcherProps) {
             <li key={option}>
               <a
                 href={`/${option}`}
-                hrefLang={option}
+                // Both the language tag and `lang` come from `htmlLang`, so
+                // this agrees with the hreflang alternates in the head - the
+                // route segment is `/no`, but the language is `nb`.
+                hrefLang={LOCALE_META[option].htmlLang}
                 lang={LOCALE_META[option].htmlLang}
                 // aria-current marks the active language for screen readers;
                 // the check mark is the same fact for everyone else.

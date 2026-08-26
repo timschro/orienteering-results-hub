@@ -37,6 +37,7 @@ export interface Dictionary {
   metaDescription: string
 }
 
+// Same order as LOCALE_META in lib/i18n.ts, so the two read in parallel.
 const dictionaries: Record<Locale, Dictionary> = {
   de: {
     unsupportedDomain: {
@@ -70,74 +71,6 @@ const dictionaries: Record<Locale, Dictionary> = {
     },
     language: { label: "Sprache" },
     metaDescription: "Live-Ergebnisse und Verfolgung für {event}",
-  },
-
-  en: {
-    unsupportedDomain: {
-      title: "Domain not supported",
-      body: "This domain is not supported. Please use one of the supported domains.",
-    },
-    empty: {
-      title: "No results yet",
-      body: "No live results have been linked for this event yet.",
-    },
-    featured: { live: "Live now", next: "Up next" },
-    links: {
-      startList: "Start list",
-      oresults: "{competition} on OResults",
-      oresultsStartList: "{competition}: start list on OResults",
-      livelox: "{competition} on Livelox",
-    },
-    footer: {
-      results: "Results by OResults",
-      maps: "maps by Livelox",
-      imprint: "Legal notice",
-      privacy: "Privacy",
-    },
-    status: {
-      live: "Live",
-      finished: "finished",
-      soon: "starting now",
-      inMinutes: "in {minutes} min",
-      today: "today",
-      tomorrow: "tomorrow",
-    },
-    language: { label: "Language" },
-    metaDescription: "Live results and tracking for {event}",
-  },
-
-  sv: {
-    unsupportedDomain: {
-      title: "Domänen stöds inte",
-      body: "Den här domänen stöds inte. Använd någon av de domäner som stöds.",
-    },
-    empty: {
-      title: "Inga resultat än",
-      body: "Inga liveresultat är länkade för det här arrangemanget än.",
-    },
-    featured: { live: "Live nu", next: "Härnäst" },
-    links: {
-      startList: "Startlista",
-      oresults: "{competition} på OResults",
-      oresultsStartList: "{competition}: startlista på OResults",
-      livelox: "{competition} på Livelox",
-    },
-    footer: {
-      results: "Resultat från OResults",
-      maps: "kartor från Livelox",
-      imprint: "Juridisk information",
-      privacy: "Integritetspolicy",
-    },
-    status: {
-      live: "Live",
-      finished: "avslutat",
-      soon: "strax",
-      inMinutes: "om {minutes} min",
-      today: "idag",
-      tomorrow: "imorgon",
-    },
-    language: { label: "Språk" },
-    metaDescription: "Liveresultat och följning för {event}",
   },
 
   da: {
@@ -174,38 +107,108 @@ const dictionaries: Record<Locale, Dictionary> = {
     metaDescription: "Liveresultater og tracking for {event}",
   },
 
-  no: {
+  et: {
     unsupportedDomain: {
-      title: "Domenet støttes ikke",
-      body: "Dette domenet støttes ikke. Bruk et av de støttede domenene.",
+      title: "Domeeni ei toetata",
+      body: "Seda domeeni ei toetata. Palun kasuta mõnda toetatud domeeni.",
     },
     empty: {
-      title: "Ingen resultater ennå",
-      body: "Det er ennå ikke lenket til liveresultater for dette arrangementet.",
+      title: "Tulemusi veel ei ole",
+      body: "Selle võistluse kohta ei ole veel otsetulemusi lingitud.",
     },
-    featured: { live: "Live nå", next: "Neste" },
+    featured: { live: "Praegu otse", next: "Järgmisena" },
     links: {
-      startList: "Startliste",
-      oresults: "{competition} på OResults",
-      oresultsStartList: "{competition}: startliste på OResults",
-      livelox: "{competition} på Livelox",
+      startList: "Stardiprotokoll",
+      oresults: "{competition} OResultsis",
+      oresultsStartList: "{competition}: stardiprotokoll OResultsis",
+      livelox: "{competition} Liveloxis",
     },
     footer: {
-      results: "Resultater fra OResults",
-      maps: "kart fra Livelox",
-      imprint: "Juridisk informasjon",
-      privacy: "Personvern",
+      results: "Tulemused OResultsist",
+      maps: "kaardid Liveloxist",
+      imprint: "Õigusteave",
+      privacy: "Privaatsus",
+    },
+    status: {
+      live: "Otse",
+      finished: "lõppenud",
+      soon: "kohe",
+      inMinutes: "{minutes} min pärast",
+      today: "täna",
+      tomorrow: "homme",
+    },
+    language: { label: "Keel" },
+    // Estonian puts the event in the genitive in front of the noun, which is
+    // why the placeholder moves rather than the sentence bending around it.
+    metaDescription: "{event} otsetulemused ja jälgimine",
+  },
+
+  en: {
+    unsupportedDomain: {
+      title: "Domain not supported",
+      body: "This domain is not supported. Please use one of the supported domains.",
+    },
+    empty: {
+      title: "No results yet",
+      body: "No live results have been linked for this event yet.",
+    },
+    featured: { live: "Live now", next: "Up next" },
+    links: {
+      startList: "Start list",
+      oresults: "{competition} on OResults",
+      oresultsStartList: "{competition}: start list on OResults",
+      livelox: "{competition} on Livelox",
+    },
+    footer: {
+      results: "Results by OResults",
+      maps: "maps by Livelox",
+      imprint: "Legal notice",
+      privacy: "Privacy",
     },
     status: {
       live: "Live",
-      finished: "avsluttet",
-      soon: "straks",
-      inMinutes: "om {minutes} min",
-      today: "i dag",
-      tomorrow: "i morgen",
+      finished: "finished",
+      soon: "starting now",
+      inMinutes: "in {minutes} min",
+      today: "today",
+      tomorrow: "tomorrow",
     },
-    language: { label: "Språk" },
-    metaDescription: "Liveresultater og følging for {event}",
+    language: { label: "Language" },
+    metaDescription: "Live results and tracking for {event}",
+  },
+
+  es: {
+    unsupportedDomain: {
+      title: "Dominio no compatible",
+      body: "Este dominio no es compatible. Utiliza uno de los dominios admitidos.",
+    },
+    empty: {
+      title: "Aún no hay resultados",
+      body: "Todavía no hay resultados en directo enlazados para esta competición.",
+    },
+    featured: { live: "En directo", next: "A continuación" },
+    links: {
+      startList: "Lista de salida",
+      oresults: "{competition} en OResults",
+      oresultsStartList: "{competition}: lista de salida en OResults",
+      livelox: "{competition} en Livelox",
+    },
+    footer: {
+      results: "Resultados de OResults",
+      maps: "mapas de Livelox",
+      imprint: "Aviso legal",
+      privacy: "Privacidad",
+    },
+    status: {
+      live: "Directo",
+      finished: "finalizado",
+      soon: "inminente",
+      inMinutes: "en {minutes} min",
+      today: "hoy",
+      tomorrow: "mañana",
+    },
+    language: { label: "Idioma" },
+    metaDescription: "Resultados en directo y seguimiento de {event}",
   },
 
   fr: {
@@ -274,6 +277,74 @@ const dictionaries: Record<Locale, Dictionary> = {
     },
     language: { label: "Taal" },
     metaDescription: "Live-uitslagen en tracking voor {event}",
+  },
+
+  no: {
+    unsupportedDomain: {
+      title: "Domenet støttes ikke",
+      body: "Dette domenet støttes ikke. Bruk et av de støttede domenene.",
+    },
+    empty: {
+      title: "Ingen resultater ennå",
+      body: "Det er ennå ikke lenket til liveresultater for dette arrangementet.",
+    },
+    featured: { live: "Live nå", next: "Neste" },
+    links: {
+      startList: "Startliste",
+      oresults: "{competition} på OResults",
+      oresultsStartList: "{competition}: startliste på OResults",
+      livelox: "{competition} på Livelox",
+    },
+    footer: {
+      results: "Resultater fra OResults",
+      maps: "kart fra Livelox",
+      imprint: "Juridisk informasjon",
+      privacy: "Personvern",
+    },
+    status: {
+      live: "Live",
+      finished: "avsluttet",
+      soon: "straks",
+      inMinutes: "om {minutes} min",
+      today: "i dag",
+      tomorrow: "i morgen",
+    },
+    language: { label: "Språk" },
+    metaDescription: "Liveresultater og følging for {event}",
+  },
+
+  sv: {
+    unsupportedDomain: {
+      title: "Domänen stöds inte",
+      body: "Den här domänen stöds inte. Använd någon av de domäner som stöds.",
+    },
+    empty: {
+      title: "Inga resultat än",
+      body: "Inga liveresultat är länkade för det här arrangemanget än.",
+    },
+    featured: { live: "Live nu", next: "Härnäst" },
+    links: {
+      startList: "Startlista",
+      oresults: "{competition} på OResults",
+      oresultsStartList: "{competition}: startlista på OResults",
+      livelox: "{competition} på Livelox",
+    },
+    footer: {
+      results: "Resultat från OResults",
+      maps: "kartor från Livelox",
+      imprint: "Juridisk information",
+      privacy: "Integritetspolicy",
+    },
+    status: {
+      live: "Live",
+      finished: "avslutat",
+      soon: "strax",
+      inMinutes: "om {minutes} min",
+      today: "idag",
+      tomorrow: "imorgon",
+    },
+    language: { label: "Språk" },
+    metaDescription: "Liveresultat och följning för {event}",
   },
 }
 
