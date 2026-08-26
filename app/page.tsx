@@ -12,6 +12,11 @@ import {
   pickFeaturedCompetition,
 } from "@/lib/utils"
 
+// Footer links are text rather than buttons, so they get vertical padding to
+// reach a tappable height without the row looking like a toolbar.
+const footerLink =
+  "inline-block py-1 underline underline-offset-4 transition-colors hover:text-foreground"
+
 // Server Component: the competition data is a compile-time constant, so the
 // whole timetable - including which competition is featured and what each
 // status says - is rendered into the HTML. The page is fully usable without
@@ -129,9 +134,49 @@ export default async function Home() {
 
       <footer className="mx-auto max-w-2xl px-5 pb-10 text-sm text-muted-foreground">
         <p>
-          {domainConfig.organization} · Ergebnisse von OResults
+          {domainConfig.organizationUrl ? (
+            <a
+              href={domainConfig.organizationUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={footerLink}
+            >
+              {domainConfig.organization}
+            </a>
+          ) : (
+            domainConfig.organization
+          )}{" "}
+          · Ergebnisse von OResults
           {hasLivelox && ", Karten von Livelox"}
         </p>
+
+        {/* Impressum and Datenschutz live on the organiser's site; see the
+            DomainConfig comment in lib/data.ts. Only rendered for domains that
+            name them, so the other domain is never given the wrong imprint. */}
+        {(domainConfig.imprintUrl || domainConfig.privacyUrl) && (
+          <p className="mt-1 flex flex-wrap gap-x-4">
+            {domainConfig.imprintUrl && (
+              <a
+                href={domainConfig.imprintUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={footerLink}
+              >
+                Impressum
+              </a>
+            )}
+            {domainConfig.privacyUrl && (
+              <a
+                href={domainConfig.privacyUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={footerLink}
+              >
+                Datenschutz
+              </a>
+            )}
+          </p>
+        )}
       </footer>
     </div>
   )

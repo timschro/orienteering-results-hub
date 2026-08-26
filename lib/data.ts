@@ -27,6 +27,18 @@ export interface DomainConfig {
   description: string
   region: string
   organization: string
+  /** The organiser's own website, linked from their name in the footer. */
+  organizationUrl?: string
+  /**
+   * A German site needs a reachable Impressum and Datenschutzerklärung. This
+   * one publishes no content of its own beyond a timetable of links, so it
+   * points at the organiser's pages rather than keeping a second copy that
+   * could fall out of date. Per domain, because each domain has a different
+   * organiser behind it - a shared hardcoded link would put the wrong
+   * imprint on the other domain.
+   */
+  imprintUrl?: string
+  privacyUrl?: string
   competitions: Competition[]
 }
 
@@ -89,6 +101,9 @@ export const DOMAIN_CONFIGS = {
     description: "Live results for Hamburg orienteering events",
     region: "Hamburg",
     organization: "Hamburg-OL",
+    organizationUrl: "https://hamburg-ol.de",
+    imprintUrl: "https://hamburg-ol.de/de/impressum",
+    privacyUrl: "https://hamburg-ol.de/de/datenschutz",
     // Names, dates and OResults event IDs are taken from oresults.eu
     // (events 3655-3658, 28.-30.08.2026).
     //
