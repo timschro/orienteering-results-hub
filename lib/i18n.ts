@@ -22,14 +22,21 @@ export interface LocaleMeta {
   htmlLang: string
 }
 
+// Authored in the order the switcher shows: the default language first,
+// because it is the organisers' own, then the rest alphabetically by endonym.
+// A fixed rule rather than a judgement call per language - the list is long
+// enough now that "where does this one go" would otherwise be decided afresh
+// every time, and a reader scanning nine entries wants them where they expect.
 export const LOCALE_META = {
   de: { label: "Deutsch", intl: "de-DE", htmlLang: "de" },
-  en: { label: "English", intl: "en-GB", htmlLang: "en" },
-  sv: { label: "Svenska", intl: "sv-SE", htmlLang: "sv" },
   da: { label: "Dansk", intl: "da-DK", htmlLang: "da" },
-  no: { label: "Norsk", intl: "nb-NO", htmlLang: "nb" },
+  et: { label: "Eesti", intl: "et-EE", htmlLang: "et" },
+  en: { label: "English", intl: "en-GB", htmlLang: "en" },
+  es: { label: "Español", intl: "es-ES", htmlLang: "es" },
   fr: { label: "Français", intl: "fr-FR", htmlLang: "fr" },
   nl: { label: "Nederlands", intl: "nl-NL", htmlLang: "nl" },
+  no: { label: "Norsk", intl: "nb-NO", htmlLang: "nb" },
+  sv: { label: "Svenska", intl: "sv-SE", htmlLang: "sv" },
 } as const satisfies Record<string, LocaleMeta>
 
 export type Locale = keyof typeof LOCALE_META

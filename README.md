@@ -10,8 +10,9 @@ A multi-domain application for displaying live orienteering competition results 
 - **QR code generation**: Easy sharing of live results
 - **Responsive design**: Works on desktop and mobile devices
 - **Dark/light theme**: Automatic theme switching
-- **Seven languages**: German, English, Swedish, Danish, Norwegian, French and
-  Dutch, chosen from the browser's `Accept-Language` and overridable in the UI
+- **Nine languages**: German, Danish, Estonian, English, Spanish, French,
+  Dutch, Norwegian and Swedish, chosen from the browser's `Accept-Language`
+  and overridable in the UI
 
 ## Supported Domains
 
@@ -139,17 +140,19 @@ response cacheable by the CDN (`s-maxage`, set in `middleware.ts`).
 
 ## Languages
 
-The language is part of the URL — `/de`, `/en`, `/sv`, `/da`, `/no`, `/fr`,
-`/nl` — so every language is a separate page for the CDN to cache and for
-search engines to index. `/` renders nothing itself: `middleware.ts` redirects
+The language is part of the URL — `/de`, `/da`, `/et`, `/en`, `/es`, `/fr`,
+`/nl`, `/no`, `/sv` — so every language is a separate page for the CDN to cache
+and for search engines to index. `/` renders nothing itself: `middleware.ts` redirects
 it, preferring in order
 
 1. the `NEXT_LOCALE` cookie, written whenever a language URL is opened,
 2. the browser's `Accept-Language` header, quality values included,
 3. German, which is the fallback whenever the browser asks for nothing we speak.
 
-The switcher in the header is seven plain links and no JavaScript; opening one
-of them *is* the choice, which is what the cookie records.
+The switcher in the header is nine plain links and no JavaScript; opening one
+of them *is* the choice, which is what the cookie records. It lists the default
+language first and the rest alphabetically by endonym, which is the order
+`LOCALE_META` is authored in.
 
 ### Adding a language
 
