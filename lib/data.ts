@@ -4,9 +4,29 @@
 // `SUPPORTED_DOMAINS` (and therefore the middleware allowlist) is derived from
 // the keys of this object, so the allowlist can never drift from the data.
 
+import type { RaceFormat } from "@/lib/dictionaries"
+
 export interface Competition {
   id: number
+  /**
+   * What the organiser calls the race. Shown as-is in every language, which
+   * is the right answer for a proper noun - and the fallback whenever `race`
+   * is not set.
+   */
   name: string
+  /**
+   * The standard race format this competition is, when it is one. Set it and
+   * the name shown follows the reader's language instead of `name`; leave it
+   * unset and `name` is used everywhere. See `RaceFormat` in
+   * lib/dictionaries.ts for the vocabulary.
+   */
+  race?: RaceFormat
+  /**
+   * Distinguishes repeated runs of the same format on one weekend, appended
+   * after the translated name ("Sprint 1", "Sprint 2"). Every language we
+   * serve puts the numeral last, so it needs no translation of its own.
+   */
+  number?: number
   /**
    * ISO 8601 timestamp *with an explicit UTC offset*.
    * Germany is +02:00 during CEST (late March - late October) and +01:00
@@ -59,6 +79,7 @@ export const DOMAIN_CONFIGS = {
       {
         id: 1,
         name: "DM Sprint Qualifikation",
+        race: "sprintQualification",
         startTime: "2026-05-23T12:00:00+02:00",
         endTime: "2026-05-23T18:00:00+02:00",
         liveResultsUrl: "https://oresults.eu/events/3188/results",
@@ -68,6 +89,7 @@ export const DOMAIN_CONFIGS = {
       {
         id: 2,
         name: "DM Sprint Finale",
+        race: "sprintFinal",
         startTime: "2026-05-24T09:00:00+02:00",
         endTime: "2026-05-24T15:00:00+02:00",
         liveResultsUrl: "https://oresults.eu/events/3189/results",
@@ -77,6 +99,7 @@ export const DOMAIN_CONFIGS = {
       {
         id: 3,
         name: "DM K.O.-Sprint Halbfinale",
+        race: "knockoutSprintSemifinal",
         startTime: "2026-05-24T16:00:00+02:00",
         endTime: "2026-05-24T19:00:00+02:00",
         liveResultsUrl: "https://oresults.eu/events/3190/results",
@@ -86,6 +109,7 @@ export const DOMAIN_CONFIGS = {
       {
         id: 4,
         name: "DM K.O.-Sprint Finale",
+        race: "knockoutSprintFinal",
         startTime: "2026-05-24T19:15:00+02:00",
         endTime: "2026-05-24T21:30:00+02:00",
         liveResultsUrl: "https://oresults.eu/events/3257/results",
@@ -95,6 +119,7 @@ export const DOMAIN_CONFIGS = {
       {
         id: 5,
         name: "DM Sprintstaffel",
+        race: "sprintRelay",
         startTime: "2026-05-25T09:00:00+02:00",
         endTime: "2026-05-25T15:00:00+02:00",
         liveResultsUrl: "https://oresults.eu/events/3191/results",
@@ -123,6 +148,7 @@ export const DOMAIN_CONFIGS = {
       {
         id: 1,
         name: "Prolog",
+        race: "prologue",
         // Friday evening before the sprints, as in 2025.
         startTime: "2026-08-28T17:00:00+02:00",
         endTime: "2026-08-28T20:00:00+02:00",
@@ -133,6 +159,8 @@ export const DOMAIN_CONFIGS = {
       {
         id: 2,
         name: "Sprint 1",
+        race: "sprint",
+        number: 1,
         startTime: "2026-08-29T11:00:00+02:00",
         endTime: "2026-08-29T14:00:00+02:00",
         liveResultsUrl: "https://oresults.eu/events/3656/results",
@@ -142,6 +170,8 @@ export const DOMAIN_CONFIGS = {
       {
         id: 3,
         name: "Sprint 2",
+        race: "sprint",
+        number: 2,
         startTime: "2026-08-29T15:00:00+02:00",
         endTime: "2026-08-29T18:00:00+02:00",
         liveResultsUrl: "https://oresults.eu/events/3657/results",
@@ -151,6 +181,7 @@ export const DOMAIN_CONFIGS = {
       {
         id: 4,
         name: "Mitteldistanz",
+        race: "middleDistance",
         startTime: "2026-08-30T10:30:00+02:00",
         endTime: "2026-08-30T13:30:00+02:00",
         liveResultsUrl: "https://oresults.eu/events/3658/results",

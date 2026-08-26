@@ -2,7 +2,7 @@ import { ExternalLink } from "lucide-react"
 
 import type { Competition } from "@/lib/data"
 import { fill, type Translation } from "@/lib/dictionaries"
-import { cn } from "@/lib/utils"
+import { cn, competitionName } from "@/lib/utils"
 
 // min-h-11 is 44px, the smallest comfortable touch target. These two links are
 // the only actions on the site, so they are buttons rather than text links.
@@ -47,6 +47,9 @@ export function CompetitionLinks({
   emphasis = false,
   className,
 }: CompetitionLinksProps) {
+  // The accessible names name the competition, so they need the same
+  // translated title the heading above them shows.
+  const name = competitionName(competition, t)
   const hasLiveResults = competition.liveResultsUrl.trim() !== ""
   const hasLivelox = competition.liveloxUrl.trim() !== ""
 
@@ -64,7 +67,7 @@ export function CompetitionLinks({
           // WCAG 2.5.3 (Label in Name) requires.
           aria-label={fill(
             hasStartList ? t.links.oresultsStartList : t.links.oresults,
-            { competition: competition.name }
+            { competition: name }
           )}
           className={cn(
             button,
@@ -93,7 +96,7 @@ export function CompetitionLinks({
           href={competition.liveloxUrl}
           target="_blank"
           rel="noopener noreferrer"
-          aria-label={fill(t.links.livelox, { competition: competition.name })}
+          aria-label={fill(t.links.livelox, { competition: name })}
           className={cn(button, "border bg-card hover:bg-muted")}
         >
           Livelox
