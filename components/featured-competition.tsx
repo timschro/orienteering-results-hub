@@ -3,7 +3,6 @@ import type { CompetitionStatus as Status } from "@/lib/competition-status"
 import { formatCompetitionDate, formatTimeWindow } from "@/lib/utils"
 import { CompetitionLinks } from "@/components/competition-links"
 import { CompetitionStatus } from "@/components/competition-status"
-import { StartListBadge } from "@/components/start-list-badge"
 
 interface FeaturedCompetitionProps {
   competition: Competition
@@ -39,15 +38,12 @@ export function FeaturedCompetition({
           <h2 id="featured-heading" className="text-2xl font-bold tracking-tight">
             {competition.name}
           </h2>
-          <div className="mt-1.5 flex shrink-0 items-center gap-2">
-            {hasStartList && <StartListBadge />}
-            <CompetitionStatus
-              startTime={competition.startTime}
-              endTime={competition.endTime}
-              initial={status}
-              className="text-base"
-            />
-          </div>
+          <CompetitionStatus
+            startTime={competition.startTime}
+            endTime={competition.endTime}
+            initial={status}
+            className="mt-1.5 shrink-0 text-base"
+          />
         </div>
 
         <p className="text-sm text-muted-foreground">
@@ -58,7 +54,12 @@ export function FeaturedCompetition({
           {formatTimeWindow(competition.startTime, competition.endTime)}
         </p>
 
-        <CompetitionLinks competition={competition} emphasis className="mt-5" />
+        <CompetitionLinks
+          competition={competition}
+          hasStartList={hasStartList}
+          emphasis
+          className="mt-5"
+        />
       </div>
     </section>
   )
