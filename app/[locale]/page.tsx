@@ -1,11 +1,16 @@
+import type { Metadata } from "next"
 import { headers } from "next/headers"
 import Image from "next/image"
+import { notFound } from "next/navigation"
 import { Compass } from "lucide-react"
 
 import { CompetitionRow } from "@/components/competition-row"
 import { FeaturedCompetition } from "@/components/featured-competition"
+import { LanguageSwitcher } from "@/components/language-switcher"
 import { getCompetitionStatus } from "@/lib/competition-status"
-import { getDomainConfig, resolveDomain } from "@/lib/data"
+import { fill, getTranslation } from "@/lib/dictionaries"
+import { DEFAULT_DOMAIN, getDomainConfig, resolveDomain } from "@/lib/data"
+import { isLocale, LOCALES, LOCALE_META } from "@/lib/i18n"
 import { hasPublishedStartList } from "@/lib/oresults"
 import {
   formatEventDateRange,
@@ -18,29 +23,98 @@ import {
 const footerLink =
   "inline-block py-1 underline underline-offset-4 transition-colors hover:text-foreground"
 
+// The locale lives in the path, so every language is a separate URL the CDN can
+// cache on its own and a separate page search engines can index. `/` never
+// renders anything itself - middleware.ts redirects it to one of these.
+//
+// Deliberately no `generateStaticParams`: the page reads `headers()` for the
+// domain and `Date.now()` for the featured competition, so it is rendered per
+// request in every language regardless. Listing the params would only claim a
+// prerender that never happens.
+
+async function currentDomain(): Promise<string> {
+  const headersList = await headers()
+  // The middleware sets x-domain; fall back to the Host header so the page is
+  // correct even when it is reached without the middleware.
+  return (
+    headersList.get("x-domain") ?? resolveDomain(headersList.get("host")) ?? ""
+  )
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}): Promise<Metadata> {
+  const { locale } = await params
+  const { t } = getTranslation(isLocale(locale) ? locale : "de")
+
+  const domainConfig = getDomainConfig((await currentDomain()) || DEFAULT_DOMAIN)
+
+  const title = domainConfig?.name || "Orienteering Results Hub"
+  const description = fill(t.metaDescription, {
+    event: domainConfig?.name || title,
+  })
+
+  return {
+    title,
+    description,
+    // metadataBase is inherited from app/layout.tsx, which is what makes these
+    // relative alternates resolve to absolute URLs.
+    alternates: {
+      canonical: `/${locale}`,
+      // Every language is a real URL, so search engines can be told about all
+      // of them. `x-default` points at `/`, which is the only address that
+      // negotiates - it redirects on Accept-Language (see middleware.ts).
+      languages: {
+        ...Object.fromEntries(
+          LOCALES.map((option) => [LOCALE_META[option].htmlLang, `/${option}`])
+        ),
+        "x-default": "/",
+      },
+    },
+    openGraph: {
+      type: "website",
+      locale: LOCALE_META[isLocale(locale) ? locale : "de"].intl.replace("-", "_"),
+      title,
+      description,
+      siteName: title,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+    },
+  }
+}
+
 // Server Component: the competition data is a compile-time constant, so the
 // whole timetable - including which competition is featured and what each
 // status says - is rendered into the HTML. The page is fully usable without
 // JavaScript; components/competition-status.tsx is the only client component,
 // and it only keeps the relative labels ticking.
-export default async function Home() {
-  const headersList = await headers()
-  // The middleware sets x-domain; fall back to the Host header so the page is
-  // correct even when it is reached without the middleware.
-  const domain =
-    headersList.get("x-domain") ?? resolveDomain(headersList.get("host")) ?? ""
-  const domainConfig = getDomainConfig(domain)
+export default async function Home({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}) {
+  const { locale } = await params
+  // Anything that is not one of our seven languages is a 404 rather than a
+  // silent fallback: /es must not quietly serve German under a Spanish URL.
+  if (!isLocale(locale)) notFound()
+
+  const translation = getTranslation(locale)
+  const { intl, t } = translation
+
+  const domainConfig = getDomainConfig(await currentDomain())
 
   if (!domainConfig) {
     return (
       <div className="flex min-h-screen items-center justify-center px-5">
         <div className="max-w-sm text-center">
           <Compass className="mx-auto mb-4 h-10 w-10 text-muted-foreground" aria-hidden="true" />
-          <h1 className="mb-2 text-xl font-bold">Domain nicht unterstützt</h1>
-          <p className="text-muted-foreground">
-            Diese Domain wird nicht unterstützt. Bitte verwenden Sie eine der unterstützten
-            Domains.
-          </p>
+          <h1 className="mb-2 text-xl font-bold">{t.unsupportedDomain.title}</h1>
+          <p className="text-muted-foreground">{t.unsupportedDomain.body}</p>
         </div>
       </div>
     )
@@ -55,7 +129,7 @@ export default async function Home() {
   // One timestamp for the whole render, so every status on the page agrees.
   const now = Date.now()
   const featured = pickFeaturedCompetition(visibleCompetitions, now)
-  const days = groupCompetitionsByDay(visibleCompetitions)
+  const days = groupCompetitionsByDay(visibleCompetitions, intl)
   const hasLivelox = visibleCompetitions.some(
     (competition) => competition.liveloxUrl.trim() !== ""
   )
@@ -99,27 +173,34 @@ export default async function Home() {
             </h1>
             {visibleCompetitions.length > 0 && (
               <p className="text-sm text-muted-foreground">
-                {formatEventDateRange(visibleCompetitions)} · {domainConfig.region}
+                {formatEventDateRange(visibleCompetitions, intl)} · {domainConfig.region}
               </p>
             )}
           </div>
+
+          <LanguageSwitcher translation={translation} />
         </div>
       </header>
 
       <main className="mx-auto max-w-2xl px-5 py-8">
         {visibleCompetitions.length === 0 ? (
           <div className="py-16 text-center">
-            <h2 className="mb-2 text-lg font-semibold">Noch keine Ergebnisse</h2>
-            <p className="text-muted-foreground">
-              Für diese Veranstaltung sind noch keine Live-Ergebnisse verlinkt.
-            </p>
+            <h2 className="mb-2 text-lg font-semibold">{t.empty.title}</h2>
+            <p className="text-muted-foreground">{t.empty.body}</p>
           </div>
         ) : (
           <>
             {featured && (
               <FeaturedCompetition
                 competition={featured}
-                status={getCompetitionStatus(featured.startTime, featured.endTime, now)}
+                status={getCompetitionStatus(
+                  featured.startTime,
+                  featured.endTime,
+                  now,
+                  intl,
+                  t.status
+                )}
+                translation={translation}
                 hasStartList={startLists.get(featured.id) === true}
               />
             )}
@@ -137,8 +218,11 @@ export default async function Home() {
                       status={getCompetitionStatus(
                         competition.startTime,
                         competition.endTime,
-                        now
+                        now,
+                        intl,
+                        t.status
                       )}
+                      translation={translation}
                       hasStartList={startLists.get(competition.id) === true}
                     />
                   ))}
@@ -163,13 +247,15 @@ export default async function Home() {
           ) : (
             domainConfig.organization
           )}{" "}
-          · Ergebnisse von OResults
-          {hasLivelox && ", Karten von Livelox"}
+          · {t.footer.results}
+          {hasLivelox && `, ${t.footer.maps}`}
         </p>
 
         {/* Impressum and Datenschutz live on the organiser's site; see the
             DomainConfig comment in lib/data.ts. Only rendered for domains that
-            name them, so the other domain is never given the wrong imprint. */}
+            name them, so the other domain is never given the wrong imprint.
+            The pages themselves are German whatever the visitor reads the
+            timetable in, so the links are marked `hrefLang="de"`. */}
         {(domainConfig.imprintUrl || domainConfig.privacyUrl) && (
           <p className="mt-1 flex flex-wrap gap-x-4">
             {domainConfig.imprintUrl && (
@@ -177,9 +263,10 @@ export default async function Home() {
                 href={domainConfig.imprintUrl}
                 target="_blank"
                 rel="noopener noreferrer"
+                hrefLang="de"
                 className={footerLink}
               >
-                Impressum
+                {t.footer.imprint}
               </a>
             )}
             {domainConfig.privacyUrl && (
@@ -187,9 +274,10 @@ export default async function Home() {
                 href={domainConfig.privacyUrl}
                 target="_blank"
                 rel="noopener noreferrer"
+                hrefLang="de"
                 className={footerLink}
               >
-                Datenschutz
+                {t.footer.privacy}
               </a>
             )}
           </p>

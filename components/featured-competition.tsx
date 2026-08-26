@@ -1,5 +1,6 @@
 import type { Competition } from "@/lib/data"
 import type { CompetitionStatus as Status } from "@/lib/competition-status"
+import type { Translation } from "@/lib/dictionaries"
 import { formatCompetitionDate, formatTimeWindow } from "@/lib/utils"
 import { CompetitionLinks } from "@/components/competition-links"
 import { CompetitionStatus } from "@/components/competition-status"
@@ -7,6 +8,7 @@ import { CompetitionStatus } from "@/components/competition-status"
 interface FeaturedCompetitionProps {
   competition: Competition
   status: Status
+  translation: Translation
   /** OResults reports a start list for this competition. See lib/oresults.ts. */
   hasStartList?: boolean
 }
@@ -19,14 +21,16 @@ interface FeaturedCompetitionProps {
 export function FeaturedCompetition({
   competition,
   status,
+  translation,
   hasStartList = false,
 }: FeaturedCompetitionProps) {
+  const { intl, t } = translation
   const isLive = status.kind === "live"
 
   return (
     <section aria-labelledby="featured-heading" className="mb-10">
       <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-        {isLive ? "Jetzt live" : "Als Nächstes"}
+        {isLive ? t.featured.live : t.featured.next}
       </p>
 
       <div
@@ -42,20 +46,23 @@ export function FeaturedCompetition({
             startTime={competition.startTime}
             endTime={competition.endTime}
             initial={status}
+            intl={intl}
+            strings={t.status}
             className="mt-1.5 shrink-0 text-base"
           />
         </div>
 
         <p className="text-sm text-muted-foreground">
           <time dateTime={competition.startTime}>
-            {formatCompetitionDate(competition.startTime)}
+            {formatCompetitionDate(competition.startTime, intl)}
           </time>
           {", "}
-          {formatTimeWindow(competition.startTime, competition.endTime)}
+          {formatTimeWindow(competition.startTime, competition.endTime, intl)}
         </p>
 
         <CompetitionLinks
           competition={competition}
+          translation={translation}
           hasStartList={hasStartList}
           emphasis
           className="mt-5"

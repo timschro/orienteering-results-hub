@@ -2,7 +2,7 @@ import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 
 import type { Competition } from "@/lib/data"
-import { BERLIN_TIME_ZONE, toCompetitionDateISO } from "@/lib/competition-status"
+import { berlinFormatter, toCompetitionDateISO } from "@/lib/competition-status"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -11,69 +11,50 @@ export function cn(...inputs: ClassValue[]) {
 // Everything below is server-only in practice: the page renders the whole
 // timetable on the server. The status helpers the client does need live in
 // lib/competition-status.ts, deliberately apart from `cn`.
+//
+// Every formatter takes an `intl` BCP 47 tag (from lib/i18n.ts) and is pinned
+// to Europe/Berlin by `berlinFormatter`. The event is in Germany, so the clock
+// is always the organiser's; only the notation follows the visitor's language.
 
-const berlinDateFormatter = new Intl.DateTimeFormat("de-DE", {
-  timeZone: BERLIN_TIME_ZONE,
-  day: "2-digit",
-  month: "2-digit",
-  year: "numeric",
-})
-
-const berlinTimeFormatter = new Intl.DateTimeFormat("de-DE", {
-  timeZone: BERLIN_TIME_ZONE,
-  hour: "2-digit",
-  minute: "2-digit",
-  hourCycle: "h23",
-})
-
-const berlinWeekdayFormatter = new Intl.DateTimeFormat("de-DE", {
-  timeZone: BERLIN_TIME_ZONE,
-  weekday: "long",
-})
-
-const berlinDayMonthFormatter = new Intl.DateTimeFormat("de-DE", {
-  timeZone: BERLIN_TIME_ZONE,
-  day: "2-digit",
-  month: "2-digit",
-})
-
-const berlinDayFormatter = new Intl.DateTimeFormat("de-DE", {
-  timeZone: BERLIN_TIME_ZONE,
-  day: "numeric",
-})
-
-const berlinMonthFormatter = new Intl.DateTimeFormat("de-DE", {
-  timeZone: BERLIN_TIME_ZONE,
-  month: "long",
-})
-
-const berlinYearFormatter = new Intl.DateTimeFormat("de-DE", {
-  timeZone: BERLIN_TIME_ZONE,
-  year: "numeric",
-})
-
-// Displayed date, derived from startTime (ex: 27.06.2025)
-export function formatCompetitionDate(startTime: string): string {
-  return berlinDateFormatter.format(new Date(startTime))
+// Displayed date, derived from startTime (ex: 27.06.2025 / 27/06/2025)
+export function formatCompetitionDate(startTime: string, intl: string): string {
+  return berlinFormatter(intl, {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  }).format(new Date(startTime))
 }
 
-// Format time window from ISO strings (ex: 08:00 - 16:00)
-export function formatTimeWindow(startTime: string, endTime: string): string {
-  const start = berlinTimeFormatter.format(new Date(startTime))
-  const end = berlinTimeFormatter.format(new Date(endTime))
+// Format time window from ISO strings (ex: 08:00 - 16:00). `h23` in every
+// language: the timetable's time column must stay one narrow, uniform width,
+// and 24-hour time is unambiguous in all seven.
+export function formatTimeWindow(
+  startTime: string,
+  endTime: string,
+  intl: string
+): string {
+  const formatter = berlinFormatter(intl, {
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  })
 
-  return `${start} - ${end}`
+  return `${formatter.format(new Date(startTime))} - ${formatter.format(new Date(endTime))}`
 }
 
 // Start time only, for the timetable's left-hand column (ex: 11:00)
-export function formatStartTime(startTime: string): string {
-  return berlinTimeFormatter.format(new Date(startTime))
+export function formatStartTime(startTime: string, intl: string): string {
+  return berlinFormatter(intl, {
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  }).format(new Date(startTime))
 }
 
 export interface CompetitionDay {
   /** YYYY-MM-DD in Berlin. Stable React key and `<time dateTime>` value. */
   date: string
-  /** Heading for the day group (ex: "Freitag, 28.08.") */
+  /** Heading for the day group (ex: "Freitag, 28.08." / "Friday 28/08") */
   heading: string
   competitions: Competition[]
 }
@@ -81,9 +62,22 @@ export interface CompetitionDay {
 /**
  * Group competitions into Berlin calendar days, chronologically. Derived from
  * `startTime` so that adding an event stays a single edit in lib/data.ts.
+ *
+ * The heading is one `Intl` pattern rather than a weekday and a date glued
+ * together, so each language gets its own separator and word order - and its
+ * own capitalisation, which is why the heading is styled `uppercase`: Swedish,
+ * Danish, Norwegian, French and Dutch all lowercase weekday names mid-sentence.
  */
-export function groupCompetitionsByDay(competitions: Competition[]): CompetitionDay[] {
+export function groupCompetitionsByDay(
+  competitions: Competition[],
+  intl: string
+): CompetitionDay[] {
   const days = new Map<string, CompetitionDay>()
+  const headingFormatter = berlinFormatter(intl, {
+    weekday: "long",
+    day: "2-digit",
+    month: "2-digit",
+  })
 
   for (const competition of sortByStart(competitions)) {
     const date = toCompetitionDateISO(competition.startTime)
@@ -94,10 +88,9 @@ export function groupCompetitionsByDay(competitions: Competition[]): Competition
       continue
     }
 
-    const start = new Date(competition.startTime)
     days.set(date, {
       date,
-      heading: `${berlinWeekdayFormatter.format(start)}, ${berlinDayMonthFormatter.format(start)}`,
+      heading: headingFormatter.format(new Date(competition.startTime)),
       competitions: [competition],
     })
   }
@@ -107,30 +100,28 @@ export function groupCompetitionsByDay(competitions: Competition[]): Competition
 
 /**
  * Human-readable span of the whole event, for the page header
- * (ex: "28.-30. August 2026"). Collapses the shared month and year.
+ * (ex: "28.-30. August 2026" / "28-30 August 2026").
+ *
+ * `formatRange` rather than hand-built separators: it already knows to
+ * collapse the shared month and year, which of the two dates carries the
+ * month in each language, and which dash to use - and it returns the plain
+ * single date when the event lasts one day.
  */
-export function formatEventDateRange(competitions: Competition[]): string {
+export function formatEventDateRange(
+  competitions: Competition[],
+  intl: string
+): string {
   if (competitions.length === 0) return ""
 
-  const times = competitions.map((competition) => new Date(competition.startTime).getTime())
-  const first = new Date(Math.min(...times))
-  const last = new Date(Math.max(...times))
+  const times = competitions.map((competition) =>
+    new Date(competition.startTime).getTime()
+  )
 
-  const day = (date: Date) => berlinDayFormatter.format(date)
-  const month = (date: Date) => berlinMonthFormatter.format(date)
-  const year = (date: Date) => berlinYearFormatter.format(date)
-
-  if (toCompetitionDateISO(first) === toCompetitionDateISO(last)) {
-    return `${day(first)}. ${month(first)} ${year(first)}`
-  }
-  if (year(first) !== year(last)) {
-    return `${day(first)}. ${month(first)} ${year(first)} - ${day(last)}. ${month(last)} ${year(last)}`
-  }
-  if (month(first) !== month(last)) {
-    return `${day(first)}. ${month(first)} - ${day(last)}. ${month(last)} ${year(last)}`
-  }
-
-  return `${day(first)}.-${day(last)}. ${month(first)} ${year(first)}`
+  return berlinFormatter(intl, {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  }).formatRange(new Date(Math.min(...times)), new Date(Math.max(...times)))
 }
 
 /**
