@@ -2,26 +2,50 @@
 // client bundle needs. Importing it from lib/utils.ts instead would pull `cn`
 // (and therefore clsx + tailwind-merge) plus every Intl formatter on the page
 // into the browser for the sake of one status label.
+//
+// It is also deliberately free of any import from lib/dictionaries.ts: the
+// labels arrive as a `StatusStrings` prop from the server, so the browser
+// downloads the six strings of one language instead of all seven languages.
 
 // All competitions take place in Germany, so every date and time is displayed
-// in Europe/Berlin regardless of where the visitor is.
+// in Europe/Berlin regardless of where the visitor is - only the *language* of
+// the labels follows the visitor.
 export const BERLIN_TIME_ZONE = "Europe/Berlin"
 
-const berlinDayMonthYearFormatter = new Intl.DateTimeFormat("de-DE", {
-  timeZone: BERLIN_TIME_ZONE,
-  day: "2-digit",
-  month: "2-digit",
-  year: "numeric",
-})
+/**
+ * `Intl.DateTimeFormat` construction is the expensive part, so formatters are
+ * built once per locale/option pair and reused. Shared with lib/utils.ts via
+ * this module because the client bundle already pays for this file.
+ */
+const formatters = new Map<string, Intl.DateTimeFormat>()
 
-const berlinWeekdayFormatter = new Intl.DateTimeFormat("de-DE", {
-  timeZone: BERLIN_TIME_ZONE,
-  weekday: "long",
-})
+export function berlinFormatter(
+  locale: string,
+  options: Intl.DateTimeFormatOptions
+): Intl.DateTimeFormat {
+  const key = `${locale}|${JSON.stringify(options)}`
+  let formatter = formatters.get(key)
 
-// Machine-readable date for <time dateTime=""> (ex: 2025-06-27)
+  if (!formatter) {
+    formatter = new Intl.DateTimeFormat(locale, {
+      timeZone: BERLIN_TIME_ZONE,
+      ...options,
+    })
+    formatters.set(key, formatter)
+  }
+
+  return formatter
+}
+
+// Machine-readable date for <time dateTime=""> (ex: 2025-06-27). Locale-
+// independent by construction: it asks a fixed locale for numeric parts and
+// reassembles them itself, so it stays ISO 8601 in every language.
 export function toCompetitionDateISO(startTime: string | number | Date): string {
-  const parts = berlinDayMonthYearFormatter.formatToParts(new Date(startTime))
+  const parts = berlinFormatter("en-GB", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  }).formatToParts(new Date(startTime))
   const get = (type: Intl.DateTimeFormatPartTypes) =>
     parts.find((part) => part.type === type)?.value ?? ""
 
@@ -47,11 +71,26 @@ const SOON_THRESHOLD_MS = 60 * 60 * 1000
 
 export type CompetitionStatusKind = "upcoming" | "soon" | "live" | "finished"
 
+/**
+ * The translated labels this module needs, as plain strings so they can cross
+ * the server/client boundary (a `(minutes: number) => string` could not).
+ * `inMinutes` carries a `{minutes}` placeholder.
+ */
+export interface StatusStrings {
+  live: string
+  finished: string
+  soon: string
+  inMinutes: string
+  today: string
+  tomorrow: string
+}
+
 export interface CompetitionStatus {
   kind: CompetitionStatusKind
   /**
-   * Short German label. Empty for competitions more than a week out, where the
-   * day heading above the row already says everything useful.
+   * Short label in the visitor's language. Empty for competitions more than a
+   * week out, where the day heading above the row already says everything
+   * useful.
    */
   label: string
 }
@@ -62,30 +101,42 @@ export interface CompetitionStatus {
  * 30s by components/competition-status.tsx.
  *
  * The timestamps carry an explicit UTC offset (see lib/data.ts), so this is
- * correct for visitors in every timezone.
+ * correct for visitors in every timezone. `intl` is the BCP 47 tag behind the
+ * weekday name; `strings` supplies everything else.
  */
 export function getCompetitionStatus(
   startTime: string,
   endTime: string,
-  now: number = Date.now()
+  now: number,
+  intl: string,
+  strings: StatusStrings
 ): CompetitionStatus {
   const start = new Date(startTime).getTime()
   const end = new Date(endTime).getTime()
 
-  if (now >= start && now <= end) return { kind: "live", label: "Live" }
-  if (now > end) return { kind: "finished", label: "beendet" }
+  if (now >= start && now <= end) return { kind: "live", label: strings.live }
+  if (now > end) return { kind: "finished", label: strings.finished }
 
   const untilStart = start - now
   if (untilStart <= SOON_THRESHOLD_MS) {
     const minutes = Math.round(untilStart / 60_000)
-    return { kind: "soon", label: minutes <= 1 ? "gleich" : `in ${minutes} Min.` }
+    return {
+      kind: "soon",
+      label:
+        minutes <= 1
+          ? strings.soon
+          : strings.inMinutes.replace("{minutes}", String(minutes)),
+    }
   }
 
   const daysAway = berlinDayNumber(start) - berlinDayNumber(now)
-  if (daysAway === 0) return { kind: "upcoming", label: "heute" }
-  if (daysAway === 1) return { kind: "upcoming", label: "morgen" }
+  if (daysAway === 0) return { kind: "upcoming", label: strings.today }
+  if (daysAway === 1) return { kind: "upcoming", label: strings.tomorrow }
   if (daysAway <= 6) {
-    return { kind: "upcoming", label: berlinWeekdayFormatter.format(start) }
+    return {
+      kind: "upcoming",
+      label: berlinFormatter(intl, { weekday: "long" }).format(start),
+    }
   }
 
   return { kind: "upcoming", label: "" }

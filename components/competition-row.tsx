@@ -1,5 +1,6 @@
 import type { Competition } from "@/lib/data"
 import type { CompetitionStatus as Status } from "@/lib/competition-status"
+import type { Translation } from "@/lib/dictionaries"
 import { cn, formatStartTime } from "@/lib/utils"
 import { CompetitionLinks } from "@/components/competition-links"
 import { CompetitionStatus } from "@/components/competition-status"
@@ -7,6 +8,7 @@ import { CompetitionStatus } from "@/components/competition-status"
 interface CompetitionRowProps {
   competition: Competition
   status: Status
+  translation: Translation
   /** OResults reports a start list for this competition. See lib/oresults.ts. */
   hasStartList?: boolean
 }
@@ -19,6 +21,7 @@ interface CompetitionRowProps {
 export function CompetitionRow({
   competition,
   status,
+  translation,
   hasStartList = false,
 }: CompetitionRowProps) {
   return (
@@ -35,7 +38,7 @@ export function CompetitionRow({
           dateTime={competition.startTime}
           className="w-14 shrink-0 text-sm font-medium text-muted-foreground"
         >
-          {formatStartTime(competition.startTime)}
+          {formatStartTime(competition.startTime, translation.intl)}
         </time>
 
         <h3 className="min-w-0 flex-1 font-semibold">{competition.name}</h3>
@@ -44,12 +47,15 @@ export function CompetitionRow({
           startTime={competition.startTime}
           endTime={competition.endTime}
           initial={status}
+          intl={translation.intl}
+          strings={translation.t.status}
           className="text-sm"
         />
       </div>
 
       <CompetitionLinks
         competition={competition}
+        translation={translation}
         hasStartList={hasStartList}
         className="sm:shrink-0"
       />

@@ -10,6 +10,8 @@ A multi-domain application for displaying live orienteering competition results 
 - **QR code generation**: Easy sharing of live results
 - **Responsive design**: Works on desktop and mobile devices
 - **Dark/light theme**: Automatic theme switching
+- **Seven languages**: German, English, Swedish, Danish, Norwegian, French and
+  Dutch, chosen from the browser's `Accept-Language` and overridable in the UI
 
 ## Supported Domains
 
@@ -67,15 +69,16 @@ npm run test:domains
 ```
 ├── app/                    # Next.js app directory
 │   ├── api/               # API routes
-│   ├── layout.tsx         # Root layout
-│   └── page.tsx           # Home page
+│   ├── [locale]/          # One route per language
+│   │   └── page.tsx       # Home page
+│   └── layout.tsx         # Root layout
 ├── components/            # React components
-│   └── ui/               # UI components
-├── hooks/                # Custom React hooks
 ├── lib/                  # Utility functions and data
 │   ├── data.ts          # Domain + competition configuration (single source of truth)
+│   ├── i18n.ts          # Locale list and Accept-Language negotiation
+│   ├── dictionaries.ts  # Every user-visible string, per language
 │   └── utils.ts         # Utility functions
-├── middleware.ts         # Next.js middleware for domain detection
+├── middleware.ts         # Domain detection and language redirect
 └── scripts/             # Utility scripts
 ```
 
@@ -126,12 +129,42 @@ machine-readable timestamp.
 - `localhost`, `127.0.0.1` and `*.vercel.app` (local dev and preview
   deployments) are served the default domain (`DEFAULT_DOMAIN` in
   `lib/data.ts`, currently `results.hamburg-ol.de`) instead of being redirected.
-- Any other host renders the "Domain nicht unterstützt" page.
+- Any other host renders the "domain not supported" page, in the visitor's
+  language.
 
 The home page is a Server Component: the competition list, including every
 results link, is in the initial HTML for crawlers and social previews. Only the
 clock, the "Aktiv" badge and the QR code are client-side, which keeps the
 response cacheable by the CDN (`s-maxage`, set in `middleware.ts`).
+
+## Languages
+
+The language is part of the URL — `/de`, `/en`, `/sv`, `/da`, `/no`, `/fr`,
+`/nl` — so every language is a separate page for the CDN to cache and for
+search engines to index. `/` renders nothing itself: `middleware.ts` redirects
+it, preferring in order
+
+1. the `NEXT_LOCALE` cookie, written whenever a language URL is opened,
+2. the browser's `Accept-Language` header, quality values included,
+3. German, which is the fallback whenever the browser asks for nothing we speak.
+
+The switcher in the header is seven plain links and no JavaScript; opening one
+of them *is* the choice, which is what the cookie records.
+
+### Adding a language
+
+Two edits, both mechanical:
+
+1. add an entry to `LOCALE_META` in `lib/i18n.ts` (endonym, `Intl` tag,
+   `<html lang>` value) — `LOCALES`, the switcher, the `hreflang` alternates
+   and the sitemap are all derived from it;
+2. add the matching entry to `dictionaries` in `lib/dictionaries.ts`.
+   TypeScript will not compile until it is there.
+
+Dates, times, weekday names and the header's date range are formatted by `Intl`
+from the locale's tag, so they need no translation. They stay pinned to
+`Europe/Berlin` in every language: the event is in Germany, and only the
+notation follows the reader.
 
 ## Deployment
 

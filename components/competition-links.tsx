@@ -1,6 +1,7 @@
 import { ExternalLink } from "lucide-react"
 
 import type { Competition } from "@/lib/data"
+import { fill, type Translation } from "@/lib/dictionaries"
 import { cn } from "@/lib/utils"
 
 // min-h-11 is 44px, the smallest comfortable touch target. These two links are
@@ -11,6 +12,7 @@ const button =
 
 interface CompetitionLinksProps {
   competition: Competition
+  translation: Translation
   /**
    * OResults reports a start list for this competition. See lib/oresults.ts.
    * Adds a caption to the OResults button, because the start list is the reason
@@ -32,7 +34,7 @@ interface CompetitionLinksProps {
  * The status next to the button ("Live", "in 38 Min.", "beendet") already
  * carries the timing, which leaves the button free to carry the destination.
  *
- * The one exception is the "Startliste" caption: that is not guessed from the
+ * The one exception is the start-list caption: that is not guessed from the
  * clock but read back from OResults itself, so while it shows it is true. It
  * belongs on the button rather than beside the competition name - a badge up
  * there says a start list exists somewhere, the caption says which tap opens
@@ -40,6 +42,7 @@ interface CompetitionLinksProps {
  */
 export function CompetitionLinks({
   competition,
+  translation: { t },
   hasStartList = false,
   emphasis = false,
   className,
@@ -59,11 +62,10 @@ export function CompetitionLinks({
           // The visible text repeats down the page, so the accessible name
           // names the competition too. It still contains the visible label, as
           // WCAG 2.5.3 (Label in Name) requires.
-          aria-label={
-            hasStartList
-              ? `${competition.name}: Startliste bei OResults`
-              : `${competition.name} bei OResults`
-          }
+          aria-label={fill(
+            hasStartList ? t.links.oresultsStartList : t.links.oresults,
+            { competition: competition.name }
+          )}
           className={cn(
             button,
             // The caption sits under the label, so the button lays its text out
@@ -77,7 +79,9 @@ export function CompetitionLinks({
           <span className="flex flex-col items-center leading-tight">
             <span>OResults</span>
             {hasStartList && (
-              <span className="text-xs font-normal opacity-75">Startliste</span>
+              <span className="text-xs font-normal opacity-75">
+                {t.links.startList}
+              </span>
             )}
           </span>
           <ExternalLink className="h-4 w-4 shrink-0 opacity-70" aria-hidden="true" />
@@ -89,7 +93,7 @@ export function CompetitionLinks({
           href={competition.liveloxUrl}
           target="_blank"
           rel="noopener noreferrer"
-          aria-label={`${competition.name} bei Livelox`}
+          aria-label={fill(t.links.livelox, { competition: competition.name })}
           className={cn(button, "border bg-card hover:bg-muted")}
         >
           Livelox
