@@ -1,4 +1,5 @@
 import { headers } from "next/headers"
+import Image from "next/image"
 import { Compass } from "lucide-react"
 
 import { CompetitionRow } from "@/components/competition-row"
@@ -75,7 +76,23 @@ export default async function Home() {
     <div className="min-h-screen">
       <header className="border-b">
         <div className="mx-auto flex max-w-2xl items-center gap-3 px-5 py-6">
-          <Compass className="h-7 w-7 shrink-0 text-primary" aria-hidden="true" />
+          {/* The logo already reads as the event's mark and the heading beside
+              it says the same thing, so the image is decorative. `unoptimized`
+              because the optimiser refuses SVG without dangerouslyAllowSVG and
+              has nothing to gain on a 12KB vector anyway. */}
+          {domainConfig.logo ? (
+            <Image
+              src={domainConfig.logo.src}
+              width={domainConfig.logo.width}
+              height={domainConfig.logo.height}
+              alt=""
+              unoptimized
+              priority
+              className="h-11 w-auto shrink-0 sm:h-14"
+            />
+          ) : (
+            <Compass className="h-7 w-7 shrink-0 text-primary" aria-hidden="true" />
+          )}
           <div className="min-w-0">
             <h1 className="text-xl font-bold tracking-tight text-balance sm:text-2xl">
               {domainConfig.name}

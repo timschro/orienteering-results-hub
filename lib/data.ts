@@ -30,6 +30,13 @@ export interface DomainConfig {
   /** The organiser's own website, linked from their name in the footer. */
   organizationUrl?: string
   /**
+   * The event logo, shown in the header in place of the generic compass.
+   * `width`/`height` are the file's own dimensions - they only set the aspect
+   * ratio the browser reserves before the SVG loads, so the header never
+   * jumps. A domain without a logo keeps the compass.
+   */
+  logo?: { src: string; width: number; height: number; alt: string }
+  /**
    * A German site needs a reachable Impressum and Datenschutzerklärung. This
    * one publishes no content of its own beyond a timetable of links, so it
    * points at the organiser's pages rather than keeping a second copy that
@@ -102,6 +109,7 @@ export const DOMAIN_CONFIGS = {
     region: "Hamburg",
     organization: "Hamburg-OL",
     organizationUrl: "https://hamburg-ol.de",
+    logo: { src: "/Hamburg-OL.svg", width: 3476, height: 1932, alt: "Hamburg-OL" },
     imprintUrl: "https://hamburg-ol.de/de/impressum",
     privacyUrl: "https://hamburg-ol.de/de/datenschutz",
     // Names, dates and OResults event IDs are taken from oresults.eu
