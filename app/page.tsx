@@ -1,4 +1,5 @@
 import { headers } from "next/headers"
+import Image from "next/image"
 import { Compass } from "lucide-react"
 
 import { CompetitionRow } from "@/components/competition-row"
@@ -11,6 +12,11 @@ import {
   groupCompetitionsByDay,
   pickFeaturedCompetition,
 } from "@/lib/utils"
+
+// Footer links are text rather than buttons, so they get vertical padding to
+// reach a tappable height without the row looking like a toolbar.
+const footerLink =
+  "inline-block py-1 underline underline-offset-4 transition-colors hover:text-foreground"
 
 // Server Component: the competition data is a compile-time constant, so the
 // whole timetable - including which competition is featured and what each
@@ -70,7 +76,23 @@ export default async function Home() {
     <div className="min-h-screen">
       <header className="border-b">
         <div className="mx-auto flex max-w-2xl items-center gap-3 px-5 py-6">
-          <Compass className="h-7 w-7 shrink-0 text-primary" aria-hidden="true" />
+          {/* The logo already reads as the event's mark and the heading beside
+              it says the same thing, so the image is decorative. `unoptimized`
+              because the optimiser refuses SVG without dangerouslyAllowSVG and
+              has nothing to gain on a 12KB vector anyway. */}
+          {domainConfig.logo ? (
+            <Image
+              src={domainConfig.logo.src}
+              width={domainConfig.logo.width}
+              height={domainConfig.logo.height}
+              alt=""
+              unoptimized
+              priority
+              className="h-11 w-auto shrink-0 sm:h-14"
+            />
+          ) : (
+            <Compass className="h-7 w-7 shrink-0 text-primary" aria-hidden="true" />
+          )}
           <div className="min-w-0">
             <h1 className="text-xl font-bold tracking-tight text-balance sm:text-2xl">
               {domainConfig.name}
@@ -129,9 +151,49 @@ export default async function Home() {
 
       <footer className="mx-auto max-w-2xl px-5 pb-10 text-sm text-muted-foreground">
         <p>
-          {domainConfig.organization} · Ergebnisse von OResults
+          {domainConfig.organizationUrl ? (
+            <a
+              href={domainConfig.organizationUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={footerLink}
+            >
+              {domainConfig.organization}
+            </a>
+          ) : (
+            domainConfig.organization
+          )}{" "}
+          · Ergebnisse von OResults
           {hasLivelox && ", Karten von Livelox"}
         </p>
+
+        {/* Impressum and Datenschutz live on the organiser's site; see the
+            DomainConfig comment in lib/data.ts. Only rendered for domains that
+            name them, so the other domain is never given the wrong imprint. */}
+        {(domainConfig.imprintUrl || domainConfig.privacyUrl) && (
+          <p className="mt-1 flex flex-wrap gap-x-4">
+            {domainConfig.imprintUrl && (
+              <a
+                href={domainConfig.imprintUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={footerLink}
+              >
+                Impressum
+              </a>
+            )}
+            {domainConfig.privacyUrl && (
+              <a
+                href={domainConfig.privacyUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={footerLink}
+              >
+                Datenschutz
+              </a>
+            )}
+          </p>
+        )}
       </footer>
     </div>
   )

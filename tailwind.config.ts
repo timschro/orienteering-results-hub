@@ -2,9 +2,6 @@ import type { Config } from "tailwindcss";
 import defaultTheme from "tailwindcss/defaultTheme";
 
 const config: Config = {
-  // Media, not class: the dark palette lives in a plain @media block in
-  // app/globals.css and there is no theme toggle to switch it.
-  darkMode: "media",
   content: [
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",

@@ -15,10 +15,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 5,
   // Matches --background in app/globals.css.
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#fbfbfa' },
-    { media: '(prefers-color-scheme: dark)', color: '#111114' },
-  ],
+  themeColor: '#fbfbfa',
 }
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -68,8 +65,6 @@ export default async function RootLayout({
     // hamburg-ol.de) serve German-only content. If a non-German event is
     // ever added, drive this from the per-domain config in lib/data.ts
     // instead of hardcoding it.
-    // Dark mode is a plain prefers-color-scheme media query in globals.css,
-    // so nothing mutates <html> before hydration and no suppression is needed.
     <html lang="de" className={inter.variable}>
       <head>
         {/* www.livelox.com is where the links actually point; preconnecting to

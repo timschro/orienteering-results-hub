@@ -3,7 +3,6 @@ import type { CompetitionStatus as Status } from "@/lib/competition-status"
 import { cn, formatStartTime } from "@/lib/utils"
 import { CompetitionLinks } from "@/components/competition-links"
 import { CompetitionStatus } from "@/components/competition-status"
-import { StartListBadge } from "@/components/start-list-badge"
 
 interface CompetitionRowProps {
   competition: Competition
@@ -41,8 +40,6 @@ export function CompetitionRow({
 
         <h3 className="min-w-0 flex-1 font-semibold">{competition.name}</h3>
 
-        {hasStartList && <StartListBadge />}
-
         <CompetitionStatus
           startTime={competition.startTime}
           endTime={competition.endTime}
@@ -51,7 +48,11 @@ export function CompetitionRow({
         />
       </div>
 
-      <CompetitionLinks competition={competition} className="sm:shrink-0" />
+      <CompetitionLinks
+        competition={competition}
+        hasStartList={hasStartList}
+        className="sm:shrink-0"
+      />
     </li>
   )
 }
