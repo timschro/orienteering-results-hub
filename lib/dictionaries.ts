@@ -41,7 +41,17 @@ export type RaceFormat =
 export interface Dictionary {
   unsupportedDomain: { title: string; body: string }
   empty: { title: string; body: string }
-  featured: { live: string; next: string }
+  featured: {
+    live: string
+    next: string
+    /**
+     * Stated in the featured card when OResults reports a start list. The
+     * rows below say the same thing as a caption on the button; the card has
+     * the room to say it outright, which is the answer to the question people
+     * actually open this page with in the days before a race.
+     */
+    startList: string
+  }
   races: Record<RaceFormat, string>
   links: {
     startList: string
@@ -74,7 +84,11 @@ const dictionaries: Record<Locale, Dictionary> = {
       title: "Noch keine Ergebnisse",
       body: "Für diese Veranstaltung sind noch keine Live-Ergebnisse verlinkt.",
     },
-    featured: { live: "Jetzt live", next: "Als Nächstes" },
+    featured: {
+      live: "Jetzt live",
+      next: "Als Nächstes",
+      startList: "Startliste veröffentlicht",
+    },
     races: {
       prologue: "Prolog",
       sprint: "Sprint",
@@ -118,7 +132,11 @@ const dictionaries: Record<Locale, Dictionary> = {
       title: "Ingen resultater endnu",
       body: "Der er endnu ikke linket til liveresultater for dette arrangement.",
     },
-    featured: { live: "Live nu", next: "Næste" },
+    featured: {
+      live: "Live nu",
+      next: "Næste",
+      startList: "Startliste offentliggjort",
+    },
     races: {
       prologue: "Prolog",
       sprint: "Sprint",
@@ -162,7 +180,11 @@ const dictionaries: Record<Locale, Dictionary> = {
       title: "Tulemusi veel ei ole",
       body: "Selle võistluse kohta ei ole veel otsetulemusi lingitud.",
     },
-    featured: { live: "Praegu otse", next: "Järgmisena" },
+    featured: {
+      live: "Praegu otse",
+      next: "Järgmisena",
+      startList: "Stardiprotokoll avaldatud",
+    },
     races: {
       prologue: "Proloog",
       sprint: "Sprint",
@@ -208,7 +230,11 @@ const dictionaries: Record<Locale, Dictionary> = {
       title: "No results yet",
       body: "No live results have been linked for this event yet.",
     },
-    featured: { live: "Live now", next: "Up next" },
+    featured: {
+      live: "Live now",
+      next: "Up next",
+      startList: "Start list published",
+    },
     races: {
       prologue: "Prologue",
       sprint: "Sprint",
@@ -252,7 +278,11 @@ const dictionaries: Record<Locale, Dictionary> = {
       title: "Aún no hay resultados",
       body: "Todavía no hay resultados en directo enlazados para esta competición.",
     },
-    featured: { live: "En directo", next: "A continuación" },
+    featured: {
+      live: "En directo",
+      next: "A continuación",
+      startList: "Lista de salida publicada",
+    },
     races: {
       prologue: "Prólogo",
       sprint: "Sprint",
@@ -296,7 +326,11 @@ const dictionaries: Record<Locale, Dictionary> = {
       title: "Pas encore de résultats",
       body: "Aucun résultat en direct n'est encore lié à cette compétition.",
     },
-    featured: { live: "En direct", next: "À suivre" },
+    featured: {
+      live: "En direct",
+      next: "À suivre",
+      startList: "Liste de départ publiée",
+    },
     races: {
       prologue: "Prologue",
       sprint: "Sprint",
@@ -340,7 +374,11 @@ const dictionaries: Record<Locale, Dictionary> = {
       title: "Nog geen uitslagen",
       body: "Er zijn nog geen live-uitslagen gekoppeld aan dit evenement.",
     },
-    featured: { live: "Nu live", next: "Hierna" },
+    featured: {
+      live: "Nu live",
+      next: "Hierna",
+      startList: "Startlijst gepubliceerd",
+    },
     races: {
       prologue: "Proloog",
       sprint: "Sprint",
@@ -384,7 +422,11 @@ const dictionaries: Record<Locale, Dictionary> = {
       title: "Ingen resultater ennå",
       body: "Det er ennå ikke lenket til liveresultater for dette arrangementet.",
     },
-    featured: { live: "Live nå", next: "Neste" },
+    featured: {
+      live: "Live nå",
+      next: "Neste",
+      startList: "Startliste publisert",
+    },
     races: {
       prologue: "Prolog",
       sprint: "Sprint",
@@ -428,7 +470,11 @@ const dictionaries: Record<Locale, Dictionary> = {
       title: "Inga resultat än",
       body: "Inga liveresultat är länkade för det här arrangemanget än.",
     },
-    featured: { live: "Live nu", next: "Härnäst" },
+    featured: {
+      live: "Live nu",
+      next: "Härnäst",
+      startList: "Startlista publicerad",
+    },
     races: {
       prologue: "Prolog",
       sprint: "Sprint",

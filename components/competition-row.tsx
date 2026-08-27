@@ -58,7 +58,7 @@ export function CompetitionRow({
       <CompetitionLinks
         competition={competition}
         translation={translation}
-        hasStartList={hasStartList}
+        noteStartList={hasStartList}
         className="sm:shrink-0"
       />
     </li>
