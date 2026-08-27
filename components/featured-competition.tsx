@@ -1,3 +1,5 @@
+import { ClipboardList } from "lucide-react"
+
 import type { Competition } from "@/lib/data"
 import type { CompetitionStatus as Status } from "@/lib/competition-status"
 import type { Translation } from "@/lib/dictionaries"
@@ -21,6 +23,13 @@ interface FeaturedCompetitionProps {
  * The one competition promoted above the timetable. This is the answer to the
  * question the page exists for - "which race is on and where are the results" -
  * so it sits in the first screenful and gets the accent-filled button.
+ *
+ * It also states the start list outright rather than captioning the button
+ * with it the way the rows do. A row has to be terse; this card does not, and
+ * in the days before a race "is the start list up yet" is the question people
+ * open the page with. Because the card says it, the button below is left
+ * plain - `noteStartList` is not passed on, so the fact is not repeated to
+ * screen readers a second time in the link's accessible name.
  */
 export function FeaturedCompetition({
   competition,
@@ -64,10 +73,18 @@ export function FeaturedCompetition({
           {formatTimeWindow(competition.startTime, competition.endTime, intl)}
         </p>
 
+        {hasStartList && (
+          <p className="mt-2 flex items-center gap-1.5 text-sm font-medium text-primary">
+            {/* A list icon rather than a dot: the only other coloured dot on
+                the page is the pulsing live indicator, and this is not that. */}
+            <ClipboardList className="h-4 w-4 shrink-0" aria-hidden="true" />
+            {t.featured.startList}
+          </p>
+        )}
+
         <CompetitionLinks
           competition={competition}
           translation={translation}
-          hasStartList={hasStartList}
           emphasis
           className="mt-5"
         />

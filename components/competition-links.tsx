@@ -14,11 +14,15 @@ interface CompetitionLinksProps {
   competition: Competition
   translation: Translation
   /**
-   * OResults reports a start list for this competition. See lib/oresults.ts.
-   * Adds a caption to the OResults button, because the start list is the reason
-   * to tap it in the days before a race.
+   * Name the start list on the OResults button - a caption under the label and
+   * a fuller accessible name - because it is the reason to tap it in the days
+   * before a race. Driven by OResults; see lib/oresults.ts.
+   *
+   * Not simply "a start list exists": the featured card states that in a line
+   * of its own and leaves this `false`, so the same fact is not said twice
+   * inside one card.
    */
-  hasStartList?: boolean
+  noteStartList?: boolean
   /** Fills the results button with the accent colour. Used by the featured slot. */
   emphasis?: boolean
   className?: string
@@ -43,7 +47,7 @@ interface CompetitionLinksProps {
 export function CompetitionLinks({
   competition,
   translation: { t },
-  hasStartList = false,
+  noteStartList = false,
   emphasis = false,
   className,
 }: CompetitionLinksProps) {
@@ -66,14 +70,14 @@ export function CompetitionLinks({
           // names the competition too. It still contains the visible label, as
           // WCAG 2.5.3 (Label in Name) requires.
           aria-label={fill(
-            hasStartList ? t.links.oresultsStartList : t.links.oresults,
+            noteStartList ? t.links.oresultsStartList : t.links.oresults,
             { competition: name }
           )}
           className={cn(
             button,
             // The caption sits under the label, so the button lays its text out
             // as a column and keeps the icon beside it.
-            hasStartList && "py-1.5",
+            noteStartList && "py-1.5",
             emphasis
               ? "bg-primary text-primary-foreground hover:bg-primary/90"
               : "border bg-card hover:bg-muted"
@@ -81,7 +85,7 @@ export function CompetitionLinks({
         >
           <span className="flex flex-col items-center leading-tight">
             <span>OResults</span>
-            {hasStartList && (
+            {noteStartList && (
               <span className="text-xs font-normal opacity-75">
                 {t.links.startList}
               </span>
