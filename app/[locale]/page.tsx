@@ -7,6 +7,7 @@ import { Compass } from "lucide-react"
 import { CompetitionRow } from "@/components/competition-row"
 import { FeaturedCompetition } from "@/components/featured-competition"
 import { LanguageSwitcher } from "@/components/language-switcher"
+import { OverallResults } from "@/components/overall-results"
 import { getCompetitionStatus } from "@/lib/competition-status"
 import { fill, getTranslation } from "@/lib/dictionaries"
 import { DEFAULT_DOMAIN, getDomainConfig, resolveDomain } from "@/lib/data"
@@ -15,6 +16,7 @@ import { hasPublishedStartList } from "@/lib/oresults"
 import {
   formatEventDateRange,
   groupCompetitionsByDay,
+  lastDayOfRace,
   pickFeaturedCompetition,
 } from "@/lib/utils"
 
@@ -120,10 +122,14 @@ export default async function Home({
     )
   }
 
-  // Competitions without any link have nothing to offer yet.
+  // Competitions without any link have nothing to offer yet. The official
+  // result PDF counts: a race can outlive its live links and still be worth a
+  // row for the result alone.
   const visibleCompetitions = domainConfig.competitions.filter(
     (competition) =>
-      competition.liveResultsUrl.trim() !== "" || competition.liveloxUrl.trim() !== ""
+      competition.liveResultsUrl.trim() !== "" ||
+      competition.liveloxUrl.trim() !== "" ||
+      (competition.resultsPdfUrl?.trim() ?? "") !== ""
   )
 
   // One timestamp for the whole render, so every status on the page agrees.
@@ -133,6 +139,14 @@ export default async function Home({
   const hasLivelox = visibleCompetitions.some(
     (competition) => competition.liveloxUrl.trim() !== ""
   )
+
+  // The combined standings close the day their races were run on. `null` means
+  // no competition has that format, and the link falls to the end of the
+  // timetable rather than disappearing (see lastDayOfRace).
+  const { overallResults } = domainConfig
+  const overallResultsDay = overallResults
+    ? lastDayOfRace(visibleCompetitions, overallResults.race)
+    : null
 
   // Which competitions already have a start list on OResults. Only races
   // inside the pre-race window are actually asked about, and every failure
@@ -227,8 +241,22 @@ export default async function Home({
                     />
                   ))}
                 </ul>
+
+                {overallResults && day.date === overallResultsDay && (
+                  <OverallResults
+                    overallResults={overallResults}
+                    translation={translation}
+                  />
+                )}
               </section>
             ))}
+
+            {overallResults && overallResultsDay === null && (
+              <OverallResults
+                overallResults={overallResults}
+                translation={translation}
+              />
+            )}
           </>
         )}
       </main>

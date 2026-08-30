@@ -39,6 +39,18 @@ export interface Competition {
   endTime: string
   liveResultsUrl: string
   liveloxUrl: string
+  /**
+   * The organiser's official result list, as exported from the competition
+   * software after the race. Either a path under /public or an absolute URL,
+   * whichever the organiser publishes; the button is hidden while this is
+   * unset, so leaving it out is the correct state for a race that has not been
+   * finalised.
+   *
+   * This is the definitive result. OResults stays linked beside it because it
+   * carries splits and the live view, and Livelox because it carries the
+   * routes - the PDF replaces neither.
+   */
+  resultsPdfUrl?: string
 }
 
 export interface DomainConfig {
@@ -66,6 +78,24 @@ export interface DomainConfig {
    */
   imprintUrl?: string
   privacyUrl?: string
+  /**
+   * Standings combining several runnings of one format into a single
+   * classification - the two sprints of a Hamburg weekend add up to one sprint
+   * result, and that combined list is what the event is actually won on.
+   *
+   * `race` is what it combines, not the event: this PDF ranks the sprints and
+   * says nothing about the prologue or the middle distance, so it is labelled
+   * "Gesamtwertung Sprint" rather than a bare "Gesamtwertung" that would claim
+   * more than the file contains. It reuses the `RaceFormat` vocabulary, so the
+   * label follows the reader's language like every other race name.
+   *
+   * Event-level rather than per-competition: it belongs to no single race, and
+   * hanging it off one of them would put two links both calling themselves the
+   * results on the same row. It is shown closing the day the last race of
+   * `race` was run on, which the timetable works out for itself - there is
+   * deliberately no date here to fall out of step with the competitions below.
+   */
+  overallResults?: { race: RaceFormat; url: string }
   competitions: Competition[]
 }
 
@@ -137,6 +167,13 @@ export const DOMAIN_CONFIGS = {
     logo: { src: "/Hamburg-OL.svg", width: 3476, height: 1932, alt: "Hamburg-OL" },
     imprintUrl: "https://hamburg-ol.de/de/impressum",
     privacyUrl: "https://hamburg-ol.de/de/datenschutz",
+    // Combined standings over Sprint 1 and Sprint 2 (MeOS "Total Results",
+    // columns Total time / Stage 1 / Stage 2). Published the evening of the
+    // second sprint, a day before the middle distance.
+    overallResults: {
+      race: "sprint",
+      url: "/results/hamburg-ol-2026/sprint-gesamt.pdf",
+    },
     // Names, dates and OResults event IDs are taken from oresults.eu
     // (events 3655-3658, 28.-30.08.2026).
     //
@@ -144,6 +181,20 @@ export const DOMAIN_CONFIGS = {
     // is missing there, the card hides the Livelox link while `liveloxUrl` is
     // "", so an empty string is the correct placeholder - do not use a dummy
     // URL.
+    //
+    // The result PDFs are MeOS exports, served from /public rather than linked
+    // off to where the organiser first uploaded them. A result is final the
+    // moment the organiser signs it off - nobody re-runs a finished race - so
+    // there is no version to keep in sync, and the only thing a link elsewhere
+    // would add is somewhere else for it to break. Held here they stay
+    // reachable for exactly as long as the site is, and they open as PDFs
+    // rather than as somebody's document viewer.
+    //
+    // Byte-identical copies of the originals in the organiser's Drive folder
+    // "Hamburg-OL 2026 - Winterhude/Public". About 190KB each.
+    //
+    // The paths carry no locale: middleware.ts deliberately excludes anything
+    // with a dot in it from the locale redirect, so /public is served as-is.
     competitions: [
       {
         id: 1,
@@ -155,6 +206,7 @@ export const DOMAIN_CONFIGS = {
         liveResultsUrl: "https://oresults.eu/events/3655/results",
         liveloxUrl:
           "https://www.livelox.com/Events/Show/200157/Hamburg-OL-2026-Prolog",
+        resultsPdfUrl: "/results/hamburg-ol-2026/prolog.pdf",
       },
       {
         id: 2,
@@ -166,6 +218,7 @@ export const DOMAIN_CONFIGS = {
         liveResultsUrl: "https://oresults.eu/events/3656/results",
         liveloxUrl:
           "https://www.livelox.com/Events/Show/199868/Hamburg-Sprint-2026-1-Lauf",
+        resultsPdfUrl: "/results/hamburg-ol-2026/sprint-1.pdf",
       },
       {
         id: 3,
@@ -177,6 +230,7 @@ export const DOMAIN_CONFIGS = {
         liveResultsUrl: "https://oresults.eu/events/3657/results",
         liveloxUrl:
           "https://www.livelox.com/Events/Show/199869/Hamburg-Sprint-2026-2-Lauf",
+        resultsPdfUrl: "/results/hamburg-ol-2026/sprint-2.pdf",
       },
       {
         id: 4,
@@ -187,6 +241,7 @@ export const DOMAIN_CONFIGS = {
         liveResultsUrl: "https://oresults.eu/events/3658/results",
         liveloxUrl:
           "https://www.livelox.com/Events/Show/199885/Hamburg-OL-2026-Mitteldistanz",
+        resultsPdfUrl: "/results/hamburg-ol-2026/mitteldistanz.pdf",
       },
     ],
   },
