@@ -2,7 +2,7 @@ import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 
 import type { Competition } from "@/lib/data"
-import type { Dictionary } from "@/lib/dictionaries"
+import type { Dictionary, RaceFormat } from "@/lib/dictionaries"
 import { berlinFormatter, toCompetitionDateISO } from "@/lib/competition-status"
 
 export function cn(...inputs: ClassValue[]) {
@@ -111,6 +111,29 @@ export function groupCompetitionsByDay(
   }
 
   return [...days.values()]
+}
+
+/**
+ * The Berlin day a combined classification belongs to: the day the *last* race
+ * of that format runs, which is the moment the combined result becomes final
+ * and the only day a link to it is not a promise about races still to come.
+ *
+ * Derived rather than configured, so `overallResults` in lib/data.ts does not
+ * carry a date that can drift from the competitions it describes - move the
+ * sprints to another day and the link moves with them.
+ *
+ * `null` when no competition has that format at all. The caller renders the
+ * link after the timetable in that case rather than dropping it: a link in the
+ * wrong place is visible and fixable, a missing one is not.
+ */
+export function lastDayOfRace(
+  competitions: Competition[],
+  race: RaceFormat
+): string | null {
+  const ofFormat = sortByStart(competitions.filter((c) => c.race === race))
+  const last = ofFormat[ofFormat.length - 1]
+
+  return last ? toCompetitionDateISO(last.startTime) : null
 }
 
 /**

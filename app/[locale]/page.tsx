@@ -16,6 +16,7 @@ import { hasPublishedStartList } from "@/lib/oresults"
 import {
   formatEventDateRange,
   groupCompetitionsByDay,
+  lastDayOfRace,
   pickFeaturedCompetition,
 } from "@/lib/utils"
 
@@ -139,6 +140,14 @@ export default async function Home({
     (competition) => competition.liveloxUrl.trim() !== ""
   )
 
+  // The combined standings close the day their races were run on. `null` means
+  // no competition has that format, and the link falls to the end of the
+  // timetable rather than disappearing (see lastDayOfRace).
+  const { overallResults } = domainConfig
+  const overallResultsDay = overallResults
+    ? lastDayOfRace(visibleCompetitions, overallResults.race)
+    : null
+
   // Which competitions already have a start list on OResults. Only races
   // inside the pre-race window are actually asked about, and every failure
   // resolves to `null`, so this cannot break the render (see lib/oresults.ts).
@@ -210,13 +219,6 @@ export default async function Home({
               />
             )}
 
-            {domainConfig.overallResults && (
-              <OverallResults
-                overallResults={domainConfig.overallResults}
-                translation={translation}
-              />
-            )}
-
             {days.map((day) => (
               <section key={day.date} className="mb-8 last:mb-0">
                 <h2 className="sticky top-0 z-10 -mx-5 bg-background/95 px-5 py-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground backdrop-blur">
@@ -239,8 +241,22 @@ export default async function Home({
                     />
                   ))}
                 </ul>
+
+                {overallResults && day.date === overallResultsDay && (
+                  <OverallResults
+                    overallResults={overallResults}
+                    translation={translation}
+                  />
+                )}
               </section>
             ))}
+
+            {overallResults && overallResultsDay === null && (
+              <OverallResults
+                overallResults={overallResults}
+                translation={translation}
+              />
+            )}
           </>
         )}
       </main>
