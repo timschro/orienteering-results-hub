@@ -29,7 +29,8 @@ interface CompetitionLinksProps {
 }
 
 /**
- * Both buttons are named after where they go, not after what they will contain.
+ * The live buttons are named after where they go, not after what they will
+ * contain.
  *
  * An OResults event page moves through phases the organiser controls - no start
  * list, then a start list, then live results, then finals - and none of those
@@ -38,11 +39,19 @@ interface CompetitionLinksProps {
  * The status next to the button ("Live", "in 38 Min.", "beendet") already
  * carries the timing, which leaves the button free to carry the destination.
  *
- * The one exception is the start-list caption: that is not guessed from the
- * clock but read back from OResults itself, so while it shows it is true. It
- * belongs on the button rather than beside the competition name - a badge up
- * there says a start list exists somewhere, the caption says which tap opens
- * it.
+ * Two exceptions, both of which name content because the content is a fact and
+ * not a guess:
+ *
+ * The start-list caption is read back from OResults itself, so while it shows
+ * it is true. It belongs on the button rather than beside the competition name
+ * - a badge up there says a start list exists somewhere, the caption says which
+ * tap opens it.
+ *
+ * The official result list is named after the file rather than its host. It is
+ * a PDF the organiser uploads once the race is final, so it has no phases to be
+ * wrong about, and its host is whatever the organiser happens to use - a name
+ * that would tell a visitor nothing. It sits between the two live services:
+ * results together, routes last.
  */
 export function CompetitionLinks({
   competition,
@@ -56,8 +65,10 @@ export function CompetitionLinks({
   const name = competitionName(competition, t)
   const hasLiveResults = competition.liveResultsUrl.trim() !== ""
   const hasLivelox = competition.liveloxUrl.trim() !== ""
+  const resultsPdfUrl = competition.resultsPdfUrl?.trim() ?? ""
+  const hasResultsPdf = resultsPdfUrl !== ""
 
-  if (!hasLiveResults && !hasLivelox) return null
+  if (!hasLiveResults && !hasLivelox && !hasResultsPdf) return null
 
   return (
     <div className={cn("flex flex-wrap gap-2", className)}>
@@ -91,6 +102,19 @@ export function CompetitionLinks({
               </span>
             )}
           </span>
+          <ExternalLink className="h-4 w-4 shrink-0 opacity-70" aria-hidden="true" />
+        </a>
+      )}
+
+      {hasResultsPdf && (
+        <a
+          href={resultsPdfUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={fill(t.links.resultsPdfLink, { competition: name })}
+          className={cn(button, "border bg-card hover:bg-muted")}
+        >
+          {t.links.resultsPdf}
           <ExternalLink className="h-4 w-4 shrink-0 opacity-70" aria-hidden="true" />
         </a>
       )}

@@ -39,6 +39,17 @@ export interface Competition {
   endTime: string
   liveResultsUrl: string
   liveloxUrl: string
+  /**
+   * The organiser's official result list, as exported from the competition
+   * software after the race. Absolute URL to wherever the organiser publishes
+   * it; the button is hidden while this is unset, so leaving it out is the
+   * correct state for a race that has not been finalised.
+   *
+   * This is the definitive result. OResults stays linked beside it because it
+   * carries splits and the live view, and Livelox because it carries the
+   * routes - the PDF replaces neither.
+   */
+  resultsPdfUrl?: string
 }
 
 export interface DomainConfig {
@@ -66,6 +77,22 @@ export interface DomainConfig {
    */
   imprintUrl?: string
   privacyUrl?: string
+  /**
+   * Standings combining several runnings of one format into a single
+   * classification - the two sprints of a Hamburg weekend add up to one sprint
+   * result, and that combined list is what the event is actually won on.
+   *
+   * `race` is what it combines, not the event: this PDF ranks the sprints and
+   * says nothing about the prologue or the middle distance, so it is labelled
+   * "Gesamtwertung Sprint" rather than a bare "Gesamtwertung" that would claim
+   * more than the file contains. It reuses the `RaceFormat` vocabulary, so the
+   * label follows the reader's language like every other race name.
+   *
+   * Event-level rather than per-competition: it belongs to no single race, and
+   * hanging it off one of them would put two links both calling themselves the
+   * results on the same row.
+   */
+  overallResults?: { race: RaceFormat; url: string }
   competitions: Competition[]
 }
 
@@ -137,6 +164,13 @@ export const DOMAIN_CONFIGS = {
     logo: { src: "/Hamburg-OL.svg", width: 3476, height: 1932, alt: "Hamburg-OL" },
     imprintUrl: "https://hamburg-ol.de/de/impressum",
     privacyUrl: "https://hamburg-ol.de/de/datenschutz",
+    // Combined standings over Sprint 1 and Sprint 2 (MeOS "Total Results",
+    // columns Total time / Stage 1 / Stage 2). Published the evening of the
+    // second sprint, a day before the middle distance.
+    overallResults: {
+      race: "sprint",
+      url: "https://view.oschh.de/v/1yYtBWs3oNfOspdV2AHRT0VGtR2wg62Ri.J5orS63BO8w",
+    },
     // Names, dates and OResults event IDs are taken from oresults.eu
     // (events 3655-3658, 28.-30.08.2026).
     //
@@ -144,6 +178,23 @@ export const DOMAIN_CONFIGS = {
     // is missing there, the card hides the Livelox link while `liveloxUrl` is
     // "", so an empty string is the correct placeholder - do not use a dummy
     // URL.
+    //
+    // The result PDFs are MeOS exports living in the organiser's Drive folder
+    // "Hamburg-OL 2026 - Winterhude/Public", shared read-only with anyone who
+    // has the link.
+    //
+    // They are linked through view.oschh.de rather than drive.google.com. A
+    // Drive share link opens Google's viewer page - JavaScript-dependent,
+    // wrapped in Google's own chrome, and inclined to hand off to the Drive app
+    // on a phone. view.oschh.de streams the same file back as
+    // `application/pdf` inline, so the link opens the document itself. That
+    // buys a second thing to keep alive: a dead link now needs only one of
+    // Drive or view.oschh.de to break.
+    //
+    // A link is `<Drive file id>.<truncated HMAC>`, minted by pasting the Drive
+    // link into view.oschh.de/admin. Signing is deterministic, so a file always
+    // yields the same link - but rotating that app's ENCRYPTION_KEY invalidates
+    // every link below at once.
     competitions: [
       {
         id: 1,
@@ -155,6 +206,7 @@ export const DOMAIN_CONFIGS = {
         liveResultsUrl: "https://oresults.eu/events/3655/results",
         liveloxUrl:
           "https://www.livelox.com/Events/Show/200157/Hamburg-OL-2026-Prolog",
+        resultsPdfUrl: "https://view.oschh.de/v/11fQy7oFtobtYLj798ZDkKeL1wRf6KM4v.V53nkOQTdVE",
       },
       {
         id: 2,
@@ -166,6 +218,7 @@ export const DOMAIN_CONFIGS = {
         liveResultsUrl: "https://oresults.eu/events/3656/results",
         liveloxUrl:
           "https://www.livelox.com/Events/Show/199868/Hamburg-Sprint-2026-1-Lauf",
+        resultsPdfUrl: "https://view.oschh.de/v/13M1_tQarcztEIGJsUg7dRihNI0IEYZVH.zuiULFE1p_g",
       },
       {
         id: 3,
@@ -177,6 +230,7 @@ export const DOMAIN_CONFIGS = {
         liveResultsUrl: "https://oresults.eu/events/3657/results",
         liveloxUrl:
           "https://www.livelox.com/Events/Show/199869/Hamburg-Sprint-2026-2-Lauf",
+        resultsPdfUrl: "https://view.oschh.de/v/1UTm9a2ad3jtxfsqndi9sff7UYafRnEDo._dnDHbYlooM",
       },
       {
         id: 4,
@@ -187,6 +241,8 @@ export const DOMAIN_CONFIGS = {
         liveResultsUrl: "https://oresults.eu/events/3658/results",
         liveloxUrl:
           "https://www.livelox.com/Events/Show/199885/Hamburg-OL-2026-Mitteldistanz",
+        resultsPdfUrl:
+          "https://view.oschh.de/v/19mFShoMfLBM-nmHH1Fun28IELNQgu4sO.8NRolIKvfyk",
       },
     ],
   },
