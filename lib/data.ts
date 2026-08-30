@@ -90,7 +90,9 @@ export interface DomainConfig {
    *
    * Event-level rather than per-competition: it belongs to no single race, and
    * hanging it off one of them would put two links both calling themselves the
-   * results on the same row.
+   * results on the same row. It is shown closing the day the last race of
+   * `race` was run on, which the timetable works out for itself - there is
+   * deliberately no date here to fall out of step with the competitions below.
    */
   overallResults?: { race: RaceFormat; url: string }
   competitions: Competition[]
