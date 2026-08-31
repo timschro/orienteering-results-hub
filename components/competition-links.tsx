@@ -47,11 +47,15 @@ interface CompetitionLinksProps {
  * - a badge up there says a start list exists somewhere, the caption says which
  * tap opens it.
  *
- * The official result list is named after the file rather than its host. It is
- * a PDF the organiser uploads once the race is final, so it has no phases to be
- * wrong about, and its host is whatever the organiser happens to use - a name
- * that would tell a visitor nothing. It sits between the two live services:
- * results together, routes last.
+ * The official result list is labelled "PDF" - the format, not the host, which
+ * is whatever the organiser happens to use and would tell a visitor nothing.
+ * Untranslated for the same reason "OResults" and "Livelox" are: it reads the
+ * same in all nine languages, and a translated word here would have to be short
+ * in every one of them. The row is tight enough that it must be. The link's
+ * accessible name carries the full "offizielle Ergebnisse (PDF)" in the
+ * reader's own language.
+ *
+ * It sits between the two live services: results together, routes last.
  */
 export function CompetitionLinks({
   competition,
@@ -114,7 +118,7 @@ export function CompetitionLinks({
           aria-label={fill(t.links.resultsPdfLink, { competition: name })}
           className={cn(button, "border bg-card hover:bg-muted")}
         >
-          {t.links.resultsPdf}
+          PDF
           <ExternalLink className="h-4 w-4 shrink-0 opacity-70" aria-hidden="true" />
         </a>
       )}

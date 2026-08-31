@@ -51,7 +51,8 @@ export function CompetitionRow({
           initial={status}
           intl={translation.intl}
           strings={translation.t.status}
-          className="text-sm"
+          // shrink-0 so a long race name can never squeeze the status into it.
+          className="shrink-0 text-sm"
         />
       </div>
 
