@@ -4,8 +4,8 @@ import type { Competition } from "@/lib/data"
 import { fill, type Translation } from "@/lib/dictionaries"
 import { cn, competitionName } from "@/lib/utils"
 
-// min-h-11 is 44px, the smallest comfortable touch target. These two links are
-// the only actions on the site, so they are buttons rather than text links.
+// min-h-11 is 44px, the smallest comfortable touch target. These links are the
+// only actions on the site, so they are buttons rather than text links.
 const button =
   "inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-md px-4 " +
   "text-[15px] font-medium transition-colors sm:flex-none"
@@ -55,7 +55,16 @@ interface CompetitionLinksProps {
  * accessible name carries the full "offizielle Ergebnisse (PDF)" in the
  * reader's own language.
  *
- * It sits between the two live services: results together, routes last.
+ * The row is ordered by what a reader wants when: OResults while the race is
+ * running, then the official PDF once it is not, then WinSplits, then Livelox.
+ * That is also the order the links appear in - the live view, the result, the
+ * splits behind the result, and last the routes that produced them, each one a
+ * step further into a race that is already over.
+ *
+ * WinSplits is named after its host like OResults and Livelox, not after its
+ * content. "Splits" would be the tempting label and would even be true, but
+ * WinSplits Online is a name European orienteers already recognise, and it is
+ * the recognition rather than the description that gets the tap.
  */
 export function CompetitionLinks({
   competition,
@@ -71,8 +80,11 @@ export function CompetitionLinks({
   const hasLivelox = competition.liveloxUrl.trim() !== ""
   const resultsPdfUrl = competition.resultsPdfUrl?.trim() ?? ""
   const hasResultsPdf = resultsPdfUrl !== ""
+  const winsplitsUrl = competition.winsplitsUrl?.trim() ?? ""
+  const hasWinsplits = winsplitsUrl !== ""
 
-  if (!hasLiveResults && !hasLivelox && !hasResultsPdf) return null
+  if (!hasLiveResults && !hasLivelox && !hasResultsPdf && !hasWinsplits)
+    return null
 
   return (
     <div className={cn("flex flex-wrap gap-2", className)}>
@@ -119,6 +131,19 @@ export function CompetitionLinks({
           className={cn(button, "border bg-card hover:bg-muted")}
         >
           PDF
+          <ExternalLink className="h-4 w-4 shrink-0 opacity-70" aria-hidden="true" />
+        </a>
+      )}
+
+      {hasWinsplits && (
+        <a
+          href={winsplitsUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={fill(t.links.winsplits, { competition: name })}
+          className={cn(button, "border bg-card hover:bg-muted")}
+        >
+          WinSplits
           <ExternalLink className="h-4 w-4 shrink-0 opacity-70" aria-hidden="true" />
         </a>
       )}
