@@ -122,14 +122,15 @@ export default async function Home({
     )
   }
 
-  // Competitions without any link have nothing to offer yet. The official
-  // result PDF counts: a race can outlive its live links and still be worth a
-  // row for the result alone.
+  // Competitions without any link have nothing to offer yet. The after-the-fact
+  // links count too: a race can outlive its live links and still be worth a row
+  // for the official result or its splits alone.
   const visibleCompetitions = domainConfig.competitions.filter(
     (competition) =>
       competition.liveResultsUrl.trim() !== "" ||
       competition.liveloxUrl.trim() !== "" ||
-      (competition.resultsPdfUrl?.trim() ?? "") !== ""
+      (competition.resultsPdfUrl?.trim() ?? "") !== "" ||
+      (competition.winsplitsUrl?.trim() ?? "") !== ""
   )
 
   // One timestamp for the whole render, so every status on the page agrees.

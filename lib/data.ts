@@ -51,6 +51,19 @@ export interface Competition {
    * routes - the PDF replaces neither.
    */
   resultsPdfUrl?: string
+  /**
+   * The race on WinSplits Online, the split-time archive most European
+   * orienteers already know. Uploaded by the organiser after the race, so like
+   * `resultsPdfUrl` it is absent until they get round to it - and the button is
+   * hidden while it is unset.
+   *
+   * Link the `page=classes` entry point, which lists the classes and lets the
+   * reader pick their own. WinSplits is served in English, Swedish and
+   * Norwegian only - not in German, and not in six of the nine languages this
+   * site speaks - so there is no locale to follow the reader with, and every
+   * link uses the English path.
+   */
+  winsplitsUrl?: string
 }
 
 export interface DomainConfig {
@@ -195,6 +208,12 @@ export const DOMAIN_CONFIGS = {
     //
     // The paths carry no locale: middleware.ts deliberately excludes anything
     // with a dot in it from the locale redirect, so /public is served as-is.
+    //
+    // The organiser also uploaded the split times to WinSplits Online, as
+    // databases 115138-115140: the two sprints and the middle distance. There
+    // is no Prolog upload, so that race carries no WinSplits link - the field
+    // being optional is exactly what that state needs, and a link guessed at a
+    // neighbouring database id would land on somebody else's race.
     competitions: [
       {
         id: 1,
@@ -219,6 +238,8 @@ export const DOMAIN_CONFIGS = {
         liveloxUrl:
           "https://www.livelox.com/Events/Show/199868/Hamburg-Sprint-2026-1-Lauf",
         resultsPdfUrl: "/results/hamburg-ol-2026/sprint-1.pdf",
+        winsplitsUrl:
+          "https://obasen.orientering.se/winsplits/online/en/default.asp?page=classes&databaseId=115138",
       },
       {
         id: 3,
@@ -231,6 +252,8 @@ export const DOMAIN_CONFIGS = {
         liveloxUrl:
           "https://www.livelox.com/Events/Show/199869/Hamburg-Sprint-2026-2-Lauf",
         resultsPdfUrl: "/results/hamburg-ol-2026/sprint-2.pdf",
+        winsplitsUrl:
+          "https://obasen.orientering.se/winsplits/online/en/default.asp?page=classes&databaseId=115139",
       },
       {
         id: 4,
@@ -242,6 +265,8 @@ export const DOMAIN_CONFIGS = {
         liveloxUrl:
           "https://www.livelox.com/Events/Show/199885/Hamburg-OL-2026-Mitteldistanz",
         resultsPdfUrl: "/results/hamburg-ol-2026/mitteldistanz.pdf",
+        winsplitsUrl:
+          "https://obasen.orientering.se/winsplits/online/en/default.asp?page=classes&databaseId=115140",
       },
     ],
   },

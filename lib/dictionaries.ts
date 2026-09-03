@@ -59,6 +59,7 @@ export interface Dictionary {
     oresults: string
     oresultsStartList: string
     livelox: string
+    winsplits: string
     /**
      * Contains "PDF", the button's visible label, as WCAG 2.5.3 (Label in
      * Name) requires of every accessible name here.
@@ -116,6 +117,7 @@ const dictionaries: Record<Locale, Dictionary> = {
       oresults: "{competition} bei OResults",
       oresultsStartList: "{competition}: Startliste bei OResults",
       livelox: "{competition} bei Livelox",
+      winsplits: "{competition} bei WinSplits",
       resultsPdfLink: "{competition}: offizielle Ergebnisse (PDF)",
       overallResults: "Gesamtwertung {race}",
     },
@@ -166,6 +168,7 @@ const dictionaries: Record<Locale, Dictionary> = {
       oresults: "{competition} på OResults",
       oresultsStartList: "{competition}: startliste på OResults",
       livelox: "{competition} på Livelox",
+      winsplits: "{competition} på WinSplits",
       resultsPdfLink: "{competition}: officielle resultater (PDF)",
       overallResults: "{race} samlet stilling",
     },
@@ -216,6 +219,7 @@ const dictionaries: Record<Locale, Dictionary> = {
       oresults: "{competition} OResultsis",
       oresultsStartList: "{competition}: stardiprotokoll OResultsis",
       livelox: "{competition} Liveloxis",
+      winsplits: "{competition} WinSplitsis",
       resultsPdfLink: "{competition}: ametlikud tulemused (PDF)",
       overallResults: "{race} üldkokkuvõte",
     },
@@ -268,6 +272,7 @@ const dictionaries: Record<Locale, Dictionary> = {
       oresults: "{competition} on OResults",
       oresultsStartList: "{competition}: start list on OResults",
       livelox: "{competition} on Livelox",
+      winsplits: "{competition} on WinSplits",
       resultsPdfLink: "{competition}: official results (PDF)",
       overallResults: "{race} overall standings",
     },
@@ -318,6 +323,7 @@ const dictionaries: Record<Locale, Dictionary> = {
       oresults: "{competition} en OResults",
       oresultsStartList: "{competition}: lista de salida en OResults",
       livelox: "{competition} en Livelox",
+      winsplits: "{competition} en WinSplits",
       resultsPdfLink: "{competition}: resultados oficiales (PDF)",
       overallResults: "Clasificación general {race}",
     },
@@ -368,6 +374,7 @@ const dictionaries: Record<Locale, Dictionary> = {
       oresults: "{competition} sur OResults",
       oresultsStartList: "{competition} : liste de départ sur OResults",
       livelox: "{competition} sur Livelox",
+      winsplits: "{competition} sur WinSplits",
       resultsPdfLink: "{competition} : résultats officiels (PDF)",
       overallResults: "Classement général {race}",
     },
@@ -418,6 +425,7 @@ const dictionaries: Record<Locale, Dictionary> = {
       oresults: "{competition} op OResults",
       oresultsStartList: "{competition}: startlijst op OResults",
       livelox: "{competition} op Livelox",
+      winsplits: "{competition} op WinSplits",
       resultsPdfLink: "{competition}: officiële resultaten (PDF)",
       overallResults: "Eindstand {race}",
     },
@@ -468,6 +476,7 @@ const dictionaries: Record<Locale, Dictionary> = {
       oresults: "{competition} på OResults",
       oresultsStartList: "{competition}: startliste på OResults",
       livelox: "{competition} på Livelox",
+      winsplits: "{competition} på WinSplits",
       resultsPdfLink: "{competition}: offisielle resultater (PDF)",
       overallResults: "{race} sammenlagt",
     },
@@ -518,6 +527,7 @@ const dictionaries: Record<Locale, Dictionary> = {
       oresults: "{competition} på OResults",
       oresultsStartList: "{competition}: startlista på OResults",
       livelox: "{competition} på Livelox",
+      winsplits: "{competition} på WinSplits",
       resultsPdfLink: "{competition}: officiella resultat (PDF)",
       overallResults: "{race} sammanlagt",
     },

@@ -15,8 +15,20 @@ interface CompetitionRowProps {
 
 /**
  * One line of the timetable. Phones stack the links under the name so they can
- * be full-width targets; from `sm` up everything sits on a single line and the
- * page reads like the programme board at the arena.
+ * be full-width targets; from `sm` up name and links sit on a single line and
+ * the page reads like the programme board at the arena.
+ *
+ * "Single line" is what fits, not a promise. The timetable column is 632px and
+ * a race carrying all four links spends 467px of it on them, which leaves the
+ * name six pixels to be drawn in - the text does not truncate, it simply
+ * overflows across the buttons. So the row wraps: `basis-64` claims a name's
+ * worth of width up front, and any row whose links cannot fit beside that
+ * drops them onto a line of their own, exactly as the phone layout does.
+ *
+ * The basis is the threshold, not the width - a row that stays on one line
+ * still grows the name to fill whatever the links leave, so every row that fit
+ * before this fits identically now. Rows with three links or fewer are
+ * untouched, which is every row on the DM domain and the Prolog here.
  */
 export function CompetitionRow({
   competition,
@@ -25,10 +37,10 @@ export function CompetitionRow({
   hasStartList = false,
 }: CompetitionRowProps) {
   return (
-    <li className="flex flex-col gap-3 py-4 sm:flex-row sm:items-center sm:gap-4">
+    <li className="flex flex-col gap-3 py-4 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
       <div
         className={cn(
-          "flex min-w-0 flex-1 items-baseline gap-4",
+          "flex min-w-0 flex-1 items-baseline gap-4 sm:basis-64",
           // Past races fade back, but their links stay at full strength —
           // results matter most after the race has finished.
           status.kind === "finished" && "opacity-60"
